@@ -13,7 +13,6 @@ from handlers.trigger_report import trigger_report_register
 from handlers.commands_top_level import top_handler
 from handlers.test_handler import test_handler
 from middlewares.db import DbMiddleware
-from aiogram_dialog import DialogRegistry
 
 
 async def main():
