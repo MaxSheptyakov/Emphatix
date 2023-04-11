@@ -415,6 +415,7 @@ class DB:
         user.hour_diff = hour_diff
         if user_chosen_times is not None:
             for schedule_time in user_chosen_times.split('; '):
+                schedule_time = if schedule_time.endswith(':00') else schedule_time +':00'
                 sched = SendSchedule(user_id=user_id,
                                      send_time_server=add_hours_to_time(parser.parse(schedule_time).time(), - hour_diff),
                                      send_type=SendTypes.EMOTION_COLLECT,
