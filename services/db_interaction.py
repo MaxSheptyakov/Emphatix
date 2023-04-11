@@ -449,7 +449,7 @@ class DB:
         return pd.DataFrame(pushes_to_send)
 
 
-    async def store_sent_pushes(self, user_id, send_schedule_ids, error):
+    async def store_sent_pushes(self, user_id, send_schedule_ids, error=None):
         for send_schedule_id in send_schedule_ids:
             sent_push = SentPushes(user_id=user_id,
                                    send_schedule_id=send_schedule_id,

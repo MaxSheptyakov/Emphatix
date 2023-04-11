@@ -3,7 +3,7 @@ import asyncio
 from aiogram import Dispatcher
 from aiogram.dispatcher import FSMContext
 from aiogram.types import Message
-from aiogram.dispatcher.filters import Text#,
+from aiogram.dispatcher.filters import Text
 
 from services.db_interaction import DB
 from states.user_start import UserMain
@@ -34,6 +34,8 @@ async def user_start(message: Message, db: DB, state: FSMContext):
         send_message = welcome_message
     elif message.text == main_page_button:
         send_message = main_page_message
+    elif message.text == do_not_want_button:
+        send_message = main_after_no_emotion_message
     else:
         send_message = main_page_message
     await state.finish()
@@ -72,7 +74,7 @@ async def save_feedback(message: Message, state: FSMContext, db: DB):
 
 def register_user(dp: Dispatcher):
     dp.register_message_handler(user_start, commands=["start"], state="*")
-    dp.register_callback_query_handler(user_start, Text(equals=main_page_button),
+    dp.register_callback_query_handler(user_start, Text(equals=[main_page_button, do_not_want_button]),
                                        state="*")
     dp.register_message_handler(user_stop, commands=['stop'], state='*')
 

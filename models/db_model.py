@@ -96,7 +96,8 @@ class UserEmotion(Base):
 class UserMessages(Base):
     __tablename__ = 'user_messages'
     user_message_id = Column(Integer, primary_key=True, autoincrement=True)
-    user_id = Column(BigInteger, ForeignKey("users.user_id"))
+    user_id = Column(BigInteger)
+    username = Column(String)
     text = Column(String)
     sent_timestamp = Column(DateTime, server_default=func.now())
     sent_date = Column(Date, server_default=func.now())
