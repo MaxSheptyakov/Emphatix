@@ -18,7 +18,7 @@ def top_handler(dp: Dispatcher):
     dp.register_message_handler(user_start, commands=["start"], state="*")
     #dp.register_message_handler(user_start, callback=main_page_button, state="*")
     dp.register_message_handler(user_stop, commands=['stop'], state='*')
-    dp.register_message_handler(user_start, Text(equals=main_page_button), state="*")
+    dp.register_message_handler(user_start, Text(equals=[main_page_button, do_not_want_button]), state="*")
     dp.register_message_handler(show_description, Text(equals=description_button), state="*")
     dp.register_message_handler(show_description, commands=['description'], state="*")
     dp.register_message_handler(emotion_report_variants, Text(equals=report_button),
