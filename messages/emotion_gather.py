@@ -15,7 +15,7 @@ first_emotion_list_again_message = _("Основной список эмоций
 
 write_own_emotion_message = _('Назови свою эмоцию самостоятельно')
 
-which_intensity_message = _('Как интенсивно?')
+which_intensity_message = _('Насколько интенсивно ты чувствуешь {emotion}?')
 
 finish_positive_med_high_intensity_message = _("""Ты молодец, что уделяешь внимание своим эмоциям! """)
 

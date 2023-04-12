@@ -65,7 +65,8 @@ async def intensity_gather_start(message: Message, state: FSMContext, db: DB):
     await db.log_message(message)
     await state.set_state(EmotionGatherStates.waiting_for_intensity)
     await state.update_data(user_emotion=message.text)
-    await message.reply(which_intensity_message, reply_markup=choose_intensity_keyboard, reply=False)
+    await message.reply(which_intensity_message.format(emotion=message.text),
+                        reply_markup=choose_intensity_keyboard, reply=False)
 
 
 async def intensity_gather_finish(message: Message, state: FSMContext, db: DB):
@@ -82,8 +83,11 @@ async def emotion_gather_finish(message: Message, state: FSMContext, db: DB):
     data = await state.get_data()
     emotion = data.get('user_emotion')
     intensity = data.get('emotion_intensity')
+    trigger_first = data.get('trigger')
+    trigger_second = data.get('trigger_second_layer')
     if emotion is not None and intensity is not None:
-        reply_text = finish_positive_med_high_intensity_message#await get_response_to_emotion(emotion=emotion, intensity=intensity)
+        reply_text = await get_response_to_emotion(emotion=emotion, intensity=intensity, trigger_first=trigger_first,
+                                                   trigger_second=trigger_second)
     else:
         reply_text = finish_positive_med_high_intensity_message
     await state.finish()
@@ -98,7 +102,7 @@ async def trigger_gather_start(message: Message, state: FSMContext, db: DB):
         return
     triggers_list = await db.get_triggers_sorted_list(message)
     keyboard = create_keyboard(triggers_list, row_width=3, with_add_variant=True, with_skip=True,
-                               with_dont_know=True)
+                               with_dont_know=True, one_time=True)
     await message.reply(triggers_start_gather_message, reply_markup=keyboard, reply=False)
 
 
@@ -113,7 +117,7 @@ async def trigger_gather_second_layer(message: Message, state: FSMContext, db: D
     if trigger in triggers_dict:
         trigger_buttons = await db.get_triggers_second_layer_sorted_list(message)
         keyboard = create_keyboard(trigger_buttons, row_width=3, with_back_button=True, with_skip=True,
-                                   with_add_variant=True)
+                                   with_add_variant=True, one_time=True)
         await message.reply(triggers_second_layer_message, reply_markup=keyboard, reply=False)
         return
     else:
