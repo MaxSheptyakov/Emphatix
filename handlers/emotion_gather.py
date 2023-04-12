@@ -85,11 +85,11 @@ async def emotion_gather_finish(message: Message, state: FSMContext, db: DB):
     intensity = data.get('emotion_intensity')
     trigger_first = data.get('trigger')
     trigger_second = data.get('trigger_second_layer')
-    if emotion is not None and intensity is not None:
-        reply_text = await get_response_to_emotion(emotion=emotion, intensity=intensity, trigger_first=trigger_first,
-                                                   trigger_second=trigger_second)
-    else:
-        reply_text = finish_positive_med_high_intensity_message
+    # if emotion is not None and intensity is not None:
+    #     reply_text = await get_response_to_emotion(emotion=emotion, intensity=intensity, trigger_first=trigger_first,
+    #                                                trigger_second=trigger_second)
+    # else:
+    reply_text = finish_positive_med_high_intensity_message
     await state.finish()
     await message.reply(reply_text, reply_markup=home_keyboard, reply=False)
 
