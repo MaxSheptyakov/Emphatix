@@ -13,6 +13,8 @@ from messages.emotion_gather import *
 from keyboards.common import *
 from keyboards.onboarding import mark_first_emotion_button
 
+from services.openai_messaging import get_response_to_emotion
+
 
 # async def emotion_gather_start(message: Message, state: FSMContext, db: DB):
 #     await db.log_message(message)
@@ -43,7 +45,7 @@ async def emotion_gather_start(message: Message, state: FSMContext, db: DB):
         if message.text == back_button:
             await message.reply(first_emotion_list_again_message, reply_markup=keyboard, reply=False)
             return
-        await message.reply(what_emotion_do_you_feel_message, reply_markup=keyboard, reply=False)
+        await message.reply(choose_emotion_message, reply_markup=keyboard, reply=False)
 
 
 async def emotion_buttons_callback_handler(query: types.CallbackQuery):
@@ -77,8 +79,15 @@ async def intensity_gather_finish(message: Message, state: FSMContext, db: DB):
 
 async def emotion_gather_finish(message: Message, state: FSMContext, db: DB):
     await db.log_message(message)
+    data = await state.get_data()
+    emotion = data.get('user_emotion')
+    intensity = data.get('emotion_intensity')
+    if emotion is not None and intensity is not None:
+        reply_text = finish_positive_med_high_intensity_message#await get_response_to_emotion(emotion=emotion, intensity=intensity)
+    else:
+        reply_text = finish_positive_med_high_intensity_message
     await state.finish()
-    await message.reply(finish_positive_med_high_intensity_message, reply_markup=home_keyboard, reply=False)
+    await message.reply(reply_text, reply_markup=home_keyboard, reply=False)
 
 
 async def trigger_gather_start(message: Message, state: FSMContext, db: DB):
