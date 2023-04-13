@@ -1,7 +1,7 @@
+import os
 import openai
-from config import config
 
-openai.api_key = config.openai.token
+openai.api_key = os.environ["OPENAI_TOKEN"]
 
 def _get_ans_from_response(response:openai.openai_object.OpenAIObject) -> str:
     return response['choices'][0]['message']['content']

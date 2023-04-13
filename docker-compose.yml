@@ -1,0 +1,7 @@
+version: '3.8'
+
+services:
+  bot:
+    build: .
+    container_name: bot
+    command: bash -c "python request_handler.py"
