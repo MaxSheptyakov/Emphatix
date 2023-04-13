@@ -1,6 +1,6 @@
 import asyncio
-
-from bot_init import bot, dp, logger, config, create_sessionmaker
+import os
+from bot_init import bot, dp, logger, create_sessionmaker
 
 from handlers.user_start import register_user
 from handlers.onboarding import onboarding
@@ -13,16 +13,22 @@ from handlers.commands_top_level import top_handler
 from handlers.test_handler import test_handler
 from middlewares.db import DbMiddleware
 
+user = os.environ['USER']
+password = os.environ['DB_PASSWORD']
+database = os.environ['DB_NAME']
+host = os.environ['DB_HOST']
+port = os.environ['DB_PORT']
+
 
 async def main():
     logger.info("Bot started!")
 
     async_sessionmaker = await create_sessionmaker(
-        user=config.db.user,
-        password=config.db.password,
-        database=config.db.database,
-        host=config.db.host,
-        port=config.db.port
+        user=user,
+        password=password,
+        database=database,
+        host=host,
+        port=port
     )
 
     dp.middleware.setup(DbMiddleware(async_sessionmaker))
