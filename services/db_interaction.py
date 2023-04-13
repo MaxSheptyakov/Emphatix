@@ -438,7 +438,7 @@ class DB:
             left join sent_pushes p on s.send_schedule_id = p.send_schedule_id
                 and p.created_at_date = current_date
         where s.active 
-            and s.created_at::time < send_time_server
+            and (s.created_at::time < send_time_server or s.created_at < current_date)
             and s.send_time_server <= current_time
             and (s.days_of_week is null or s.days_of_week ~ extract(isodow from current_date)::text
                 or s.date_to_send = current_date)

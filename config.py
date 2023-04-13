@@ -18,11 +18,16 @@ class TgBot:
     use_redis: bool
     return_url: str
 
+@dataclass
+class OpenAI:
+    token: str
+
 
 @dataclass
 class Config:
     tg_bot: TgBot
     db: DbConfig
+    openai: OpenAI
 
 
 def load_config(path: str):
@@ -39,6 +44,7 @@ def load_config(path: str):
             return_url=tg_bot.get('return_url')
         ),
         db=DbConfig(**config["db"]),
+        openai=OpenAI(token=config['openai'].get('openai_token'))
     )
 
 
