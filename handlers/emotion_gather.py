@@ -101,7 +101,7 @@ async def trigger_gather_start(message: Message, state: FSMContext, db: DB):
         await message.reply(triggers_new_variant_message, reply=False)
         return
     triggers_list = await db.get_triggers_sorted_list(message)
-    keyboard = create_keyboard(triggers_list, row_width=3, with_add_variant=True, with_skip=True,
+    keyboard = create_keyboard(triggers_list, row_width=2, with_add_variant=True, with_skip=True,
                                with_dont_know=True, one_time=True)
     await message.reply(triggers_start_gather_message, reply_markup=keyboard, reply=False)
 
@@ -116,7 +116,7 @@ async def trigger_gather_second_layer(message: Message, state: FSMContext, db: D
     await state.update_data(trigger=trigger)
     if trigger in triggers_dict:
         trigger_buttons = await db.get_triggers_second_layer_sorted_list(message)
-        keyboard = create_keyboard(trigger_buttons, row_width=3, with_back_button=True, with_skip=True,
+        keyboard = create_keyboard(trigger_buttons, row_width=2, with_back_button=True, with_skip=True,
                                    with_add_variant=True, one_time=True)
         await message.reply(triggers_second_layer_message, reply_markup=keyboard, reply=False)
         return
