@@ -1,5 +1,4 @@
 import asyncio
-from aiogram.utils.exceptions import BotBlocked
 
 from bot_init import bot, dp, logger, config, create_sessionmaker
 

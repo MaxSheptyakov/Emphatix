@@ -36,12 +36,12 @@ dp = Dispatcher(bot, storage=storage)
 
 async def create_sessionmaker(user, password, database, host, port, sync=True):
     engine = create_async_engine(f"postgresql+asyncpg://{user}:{password}@{host}:{port}/{database}",
-                                 echo=False, pool_size=30#echo
+                                 echo=False, pool_size=30  # echo
                                  )
 
     if sync:
         async with engine.begin() as conn:
-            #await conn.run_sync(Base.metadata.drop_all) #TODO
+            # await conn.run_sync(Base.metadata.drop_all) #TODO
             await conn.run_sync(Base.metadata.create_all)
 
     async_sessionmaker = sessionmaker(
