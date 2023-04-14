@@ -44,7 +44,8 @@ def load_config(path: str):
             admin_id=tg_bot.getint("admin_id"),
             use_redis=tg_bot.getboolean("use_redis"),
             return_url=tg_bot.get('return_url'),
-            beta_users=[147548604, 139376359, 1035579741, 173928799, 336949655] # [int(x) for x in tg_bot.get('beta_users').split(', ')]
+            beta_users=[147548604, 139376359, 1035579741, 173928799, 336949655, 158990194,
+                        921610253] # [int(x) for x in tg_bot.get('beta_users').split(', ')]
         ),
         db=DbConfig(**config["db"]),
         openai=OpenAI(token=config['openai'].get('openai_token'))

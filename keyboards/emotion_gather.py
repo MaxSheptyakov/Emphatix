@@ -59,7 +59,7 @@ mid_intensity_buttons = ['5', '6']
 high_intensity_buttons = ['7', '8', '9', '10']
 dont_know_intensity_buttons = [dont_know_button]
 intensity_buttons = low_intensity_buttons + mid_intensity_buttons + high_intensity_buttons + dont_know_intensity_buttons
-choose_intensity_keyboard = create_keyboard(intensity_buttons, row_width=5)
+choose_intensity_keyboard = create_keyboard(intensity_buttons, row_width=5, one_time=True)
 
 
 """Triggers keyboard"""
