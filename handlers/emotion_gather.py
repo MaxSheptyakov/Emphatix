@@ -61,8 +61,13 @@ async def intensity_gather_start(message: Message, state: FSMContext, db: DB):
     await db.log_message(message)
     await state.set_state(EmotionGatherStates.waiting_for_intensity)
     await state.update_data(user_emotion=message.text)
-    await message.reply(which_intensity_message.format(emotion=message.text),
-                        reply_markup=choose_intensity_keyboard, reply=False)
+    if message.text != dont_know_button:
+        await message.reply(which_intensity_message.format(emotion=message.text),
+                            reply_markup=choose_intensity_keyboard, reply=False)
+    else:
+        await message.reply(which_intensity_unknown_emotion_message,
+                            reply_markup=choose_intensity_keyboard, reply=False)
+
 
 
 async def intensity_gather_finish(message: Message, state: FSMContext, db: DB):
