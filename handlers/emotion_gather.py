@@ -53,7 +53,7 @@ async def emotion_gather_start(message: Message, state: FSMContext, db: DB):
 
 async def write_own_emotion(message: Message, state: FSMContext, db: DB):
     await db.log_message(message)
-    await message.reply(write_own_emotion_message, reply_markup=None, reply=False)
+    await message.reply(write_own_emotion_message, reply_markup=ReplyKeyboardRemove(), reply=False)
     await state.set_state(EmotionGatherStates.write_own_emotion_state)
 
 
@@ -92,7 +92,6 @@ async def emotion_gather_finish(message: Message, state: FSMContext, db: DB):
         await message.reply(reply_text, reply_markup=home_keyboard, reply=False)
     await state.finish()
     # await message.reply(reply_text, reply_markup=home_keyboard, reply=False)
-
 
 
 async def trigger_gather_start(message: Message, state: FSMContext, db: DB):
