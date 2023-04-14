@@ -373,9 +373,6 @@ class DB:
         user_data = await state.get_data()
         user_id = message.from_id
         user = await self.return_user_if_exist(message)
-        print(user_data.get('server_current_time'))
-        print(user_data.get('user_chosen_times'))
-        print(user_data.get('current_time'))
         user_chosen_times = user_data.get('user_chosen_times')
         current_time = user_data.get('current_time') + ':00' if ':' not in user_data.get('current_time') \
             and user_data.get('current_time') is not None else None
