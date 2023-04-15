@@ -1,0 +1,33 @@
+name: Build and Deploy Docker Image
+
+on:
+  push:
+    branches:
+      - test
+
+env:
+  SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Clone Git Repository
+        uses: actions/checkout@v2
+        with:
+          ref: test
+
+      - name: Deploy Docker Image to Server
+        uses: appleboy/ssh-action@master
+        with:
+          host: ubuntu@ec2-52-208-43-242.eu-west-1.compute.amazonaws.com
+          key: ${{ env.SSH_PRIVATE_KEY }}
+          script: |
+            cd test_bot
+            rm -r Emphatix
+            git clone https://github.com/MaxSheptyakov/Emphatix.git --branch test
+            cp ~/test_bot/bot.ini ~/test_bot/Emphatix
+            docker ps -aq | xargs docker stop | xargs docker rm &&
+            cd Emphatix && docker-compose up --build -d
+            
