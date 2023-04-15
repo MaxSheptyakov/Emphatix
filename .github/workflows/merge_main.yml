@@ -22,9 +22,8 @@ jobs:
       - name: Deploy Docker Image to Server
         uses: appleboy/ssh-action@master
         with:
-          host: ec2-52-208-43-242.eu-west-1.compute.amazonaws.com
-          username: ubuntu
-          password: 123456
+          host: ubuntu@ec2-52-208-43-242.eu-west-1.compute.amazonaws.com
+          key: ${{ env.SSH_PRIVATE_KEY }}
           script: |
             cd test_bot
             sudo rm -r Emphatix
