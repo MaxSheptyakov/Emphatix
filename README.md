@@ -14,7 +14,7 @@ This is a simple bot which can hepls you to start manage yourself emotions
 1. Clone the repository to your PC
 2. Run in workdir following command
 ```
-docker-compose up --build -d
+sudo docker compose up --build -d
 ```
 ## License
 This project is licensed under the MIT License - see the LICENSE.md file for details.
