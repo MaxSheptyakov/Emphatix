@@ -23,15 +23,12 @@ async def send_pushes():
         sync=False
     )
     while True:
-
         db_middleware = DbMiddleware(async_sessionmaker)
         await db_middleware.pre_process_messages()
-        pass ## Some logics to send push and store info about it TODO
         pushes = await db_middleware.db.get_pushes_to_send()
         print(pushes)
         pushes_to_send = pushes.drop_duplicates(['user_id', 'send_type', 'custom_text'])
         for i, push in pushes_to_send.iterrows():
-            print(push)
             user_id, push_text, keyboard = prepare_push(push)
             try:
                 await bot.send_message(chat_id=user_id, text=push_text, reply_markup=keyboard)

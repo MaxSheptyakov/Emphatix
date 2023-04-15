@@ -374,10 +374,12 @@ class DB:
         user_id = message.from_id
         user = await self.return_user_if_exist(message)
         user_chosen_times = user_data.get('user_chosen_times')
+        current_time = user_data.get('current_time') + ':00' if ':' not in user_data.get('current_time') \
+            and user_data.get('current_time') is not None else None
         server_current_time = parser.parse(user_data.get('server_current_time')).time() \
             if user_data.get('server_current_time') else None
-        current_time = parser.parse(user_data.get('current_time')).time() \
-            if user_data.get('current_time') else None
+        current_time = parser.parse(current_time).time() \
+            if current_time else None
         q = OnboardingAnswer(
             user_id=user_id,
             current_time=current_time,
@@ -406,8 +408,10 @@ class DB:
         user_chosen_times = user_data.get('user_chosen_times')
         server_current_time = parser.parse(user_data.get('server_current_time')).time()\
                 if user_data.get('server_current_time') else None
-        current_time = parser.parse(user_data.get('current_time')).time() \
-            if user_data.get('current_time') else None
+        current_time = user_data.get('current_time') + ':00' if ':' not in user_data.get('current_time') \
+                                                                and user_data.get('current_time') is not None else None
+        current_time = parser.parse(current_time).time() \
+            if current_time else None
         update_statement = update(SendSchedule).filter_by(user_id=user_id).values(active=False)
         await self.session.execute(update_statement)
         hour_diff = get_hour_diff(current_time, server_current_time)

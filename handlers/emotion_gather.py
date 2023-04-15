@@ -2,6 +2,8 @@ from aiogram import Dispatcher, types
 from aiogram.types import Message, ReplyKeyboardRemove
 from aiogram.dispatcher import FSMContext
 from aiogram.dispatcher.filters import Text
+
+from messages.common import bot_thinking_message
 from services.db_interaction import DB
 
 from states.emotion_gather import EmotionGatherStates
@@ -12,6 +14,7 @@ from messages.emotion_gather import *
 
 from keyboards.common import *
 from keyboards.onboarding import mark_first_emotion_button
+from config import config
 
 from services.openai_messaging import get_response_to_emotion
 
@@ -37,27 +40,20 @@ async def emotion_gather_start(message: Message, state: FSMContext, db: DB):
             data['emotions_list_first'] = emotions_list_first
             data['emotions_list_second'] = emotions_list_second
     if message.text == show_more_emotions_button:
-        keyboard = create_keyboard(data.get('emotions_list_second'), with_main=True, one_time=False, row_width=3)
+        keyboard = create_keyboard(data.get('emotions_list_second'), with_main=True, one_time=True, row_width=3)
         await message.reply(what_emotion_do_you_feel_pt2_message, reply_markup=keyboard,
                             reply=False)
     else:
-        keyboard = create_keyboard(data.get('emotions_list_first'), with_main=True, one_time=False, row_width=3)
+        keyboard = create_keyboard(data.get('emotions_list_first'), with_main=True, one_time=True, row_width=3)
         if message.text == back_button:
             await message.reply(first_emotion_list_again_message, reply_markup=keyboard, reply=False)
             return
         await message.reply(choose_emotion_message, reply_markup=keyboard, reply=False)
 
 
-async def emotion_buttons_callback_handler(query: types.CallbackQuery):
-    print(query.data)
-    print(query.message.reply_markup)
-
-    #await query.message.edit_reply_markup(reply_markup=inline_kb)
-
-
 async def write_own_emotion(message: Message, state: FSMContext, db: DB):
     await db.log_message(message)
-    await message.reply(write_own_emotion_message, reply_markup=None, reply=False)
+    await message.reply(write_own_emotion_message, reply_markup=ReplyKeyboardRemove(), reply=False)
     await state.set_state(EmotionGatherStates.write_own_emotion_state)
 
 
@@ -65,8 +61,13 @@ async def intensity_gather_start(message: Message, state: FSMContext, db: DB):
     await db.log_message(message)
     await state.set_state(EmotionGatherStates.waiting_for_intensity)
     await state.update_data(user_emotion=message.text)
-    await message.reply(which_intensity_message.format(emotion=message.text),
-                        reply_markup=choose_intensity_keyboard, reply=False)
+    if message.text != dont_know_button:
+        await message.reply(which_intensity_message.format(emotion=message.text),
+                            reply_markup=choose_intensity_keyboard, reply=False)
+    else:
+        await message.reply(which_intensity_unknown_emotion_message,
+                            reply_markup=choose_intensity_keyboard, reply=False)
+
 
 
 async def intensity_gather_finish(message: Message, state: FSMContext, db: DB):
@@ -85,13 +86,17 @@ async def emotion_gather_finish(message: Message, state: FSMContext, db: DB):
     intensity = data.get('emotion_intensity')
     trigger_first = data.get('trigger')
     trigger_second = data.get('trigger_second_layer')
-    # if emotion is not None and intensity is not None:
-    #     reply_text = await get_response_to_emotion(emotion=emotion, intensity=intensity, trigger_first=trigger_first,
-    #                                                trigger_second=trigger_second)
-    # else:
-    reply_text = finish_positive_med_high_intensity_message
+    if emotion is not None and intensity is not None and message.from_id in config.tg_bot.beta_users:
+        m = await message.reply(bot_thinking_message, reply=False)
+        reply_text = await get_response_to_emotion(emotion=emotion, intensity=intensity, trigger_first=trigger_first,
+                                                   trigger_second=trigger_second)
+        await m.delete()
+        await message.reply(reply_text, reply_markup=home_keyboard, reply=False)
+    else:
+        reply_text = finish_positive_med_high_intensity_message
+        await message.reply(reply_text, reply_markup=home_keyboard, reply=False)
     await state.finish()
-    await message.reply(reply_text, reply_markup=home_keyboard, reply=False)
+    # await message.reply(reply_text, reply_markup=home_keyboard, reply=False)
 
 
 async def trigger_gather_start(message: Message, state: FSMContext, db: DB):
@@ -139,7 +144,6 @@ def emotions_gather(dp: Dispatcher):
     dp.register_message_handler(emotion_gather_start, Text(equals=emotions_gather_button), state="*")
     dp.register_message_handler(emotion_gather_start, Text(equals=mark_first_emotion_button), state="*")
     dp.register_message_handler(emotion_gather_start, commands=['gather_emotion'], state="*")
-    dp.register_callback_query_handler(emotion_buttons_callback_handler, state=EmotionGatherStates.waiting_for_emotion)
     dp.register_message_handler(emotion_gather_start, Text(equals=show_more_emotions_button),
                                 state=EmotionGatherStates.waiting_for_emotion)
     dp.register_message_handler(write_own_emotion, Text(equals=write_own_emotion_button),

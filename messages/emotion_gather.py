@@ -17,6 +17,8 @@ write_own_emotion_message = _('Назови свою эмоцию самосто
 
 which_intensity_message = _('Насколько интенсивно ты чувствуешь {emotion}?')
 
+which_intensity_unknown_emotion_message = _('Насколько интенсивны твои эмоции?')
+
 finish_positive_med_high_intensity_message = _("""Ты молодец, что уделяешь внимание своим эмоциям! """)
 
 
