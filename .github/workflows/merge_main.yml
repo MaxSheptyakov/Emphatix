@@ -23,7 +23,7 @@ jobs:
         uses: appleboy/ssh-action@master
         with:
           host: ubuntu@ec2-52-208-43-242.eu-west-1.compute.amazonaws.com
-          key: ${{ env.SSH_PRIVATE_KEY }}
+          key: /home/ubuntu/.ssh/id_ed25519
           script: |
             cd test_bot
             sudo rm -r Emphatix
