@@ -22,7 +22,9 @@ jobs:
       - name: Deploy Docker Image to Server
         uses: appleboy/ssh-action@master
         with:
-          host: ubuntu@52.208.43.242
+          host: 52.208.43.242
+          username: ubuntu
+          password: 123456
           key: ${{ env.SSH_PRIVATE_KEY }}
           script: |
             cd test_bot
