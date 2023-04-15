@@ -22,7 +22,7 @@ jobs:
       - name: Deploy Docker Image to Server
         uses: appleboy/ssh-action@master
         with:
-          host: ubuntu@ec2-52-208-43-242.eu-west-1.compute.amazonaws.com
+          host: ubuntu@52.208.43.242
           key: ${{ env.SSH_PRIVATE_KEY }}
           script: |
             cd test_bot
