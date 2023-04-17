@@ -36,7 +36,6 @@ async def set_custom_period(message: Message, state: FSMContext, db: DB):
 
 async def weekly_start_days(message: Message, state: FSMContext, db: DB):
     await db.log_message(message)
-    print(message)
     try:
         date_first, date_second = parse_custom_date_period(message.text)
         await send_flower(message, state, db, days=None, date_first=date_first, date_second=date_second)
@@ -48,7 +47,6 @@ async def weekly_start_days(message: Message, state: FSMContext, db: DB):
         await send_flower(message, state, db, days)
         return
     except Exception as e:
-        print(e)
         await message.reply(cant_parse_period_message, reply=False)
 
 

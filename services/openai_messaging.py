@@ -36,7 +36,5 @@ async def get_response_to_emotion_report(emotion_list, days, sex=None):
          "content": template
          },
     ]
-    print(template)
     resp = await generate_openai_result_async(messages)
-    print(resp)
     return resp#await generate_openai_result_async(messages)
