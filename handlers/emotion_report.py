@@ -4,6 +4,7 @@ from aiogram.types import Message, ReplyKeyboardRemove
 from aiogram.dispatcher.filters import Text, Regexp
 
 from config import config
+from messages.common import bot_thinking_message
 from services.db_interaction import DB
 from services.openai_messaging import get_response_to_emotion_report
 from states.emotion_report import EmotionReport
@@ -74,20 +75,24 @@ async def send_flower(message: Message, state: FSMContext, db: DB, days: int = N
     else:
         await message.reply(period_you_marked_message.format(date_first=date_first, date_second=date_second),
                             reply=False)
-    await message.reply_photo(open(flower, 'rb'), reply_markup=home_keyboard, reply=False)
-    try:
-        os.remove(flower)
-    except:
-        pass
-    await state.finish()
     if message.from_id in config.tg_bot.beta_users:
+        await message.reply_photo(open(flower, 'rb'), reply=False)
         emotions_aggregated = await db.get_emotions_for_ai_response(message, days, date_first, date_second)
         if date_first is not None and date_second is not None:
             days = (date_second - date_first).days
         user = await db.return_user_if_exist(message)
         sex = None #user.sex
+        msg = await message.reply(bot_thinking_message, reply=False)
         ai_reply_text = await get_response_to_emotion_report(emotions_aggregated, days, sex)
-        await message.reply(ai_reply_text, reply=False)
+        await msg.delete()
+        await message.reply(ai_reply_text, reply_markup=home_keyboard, reply=False)
+    else:
+        await message.reply_photo(open(flower, 'rb'), reply_markup=home_keyboard, reply=False)
+    try:
+        os.remove(flower)
+    except:
+        pass
+    await state.finish()
 
 
 def weekly_report_dp(dp: Dispatcher):

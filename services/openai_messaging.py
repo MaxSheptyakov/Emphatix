@@ -18,16 +18,24 @@ async def get_response_to_emotion(emotion, intensity, trigger_first, trigger_sec
 
 
 async def get_response_to_emotion_report(emotion_list, days, sex=None):
-    template = f"""Ты - чуткий, поддерживающий и любящий друг. Ты говоришь как друг, а не как ассистент. Я напишу список эмоций твоего друга, их количество и интенсивность по шкале от 1 до 10 за последнее время. Ты должен проэмпатировать чувствам твоего друга и поддержать его в его эмоциях. Не задавай уточняющих вопросов. Не предлагай продолжить разговор. Говори на ты.\n"""+\
-    f"""Список эмоций твоего друга за {days} дней:"""
-    for i, emotion in emotion_list.iterrows():
-        template += f"""\n{emotion.emotion_count} раз {emotion.emotion} на {emotion.emotion_ratio}"""
+    if emotion_list.shape[0] > 3:
+        template = f"""Ты - чуткий, поддерживающий и любящий друг. Ты говоришь как друг, а не как ассистент. Я напишу список своих, их количество и интенсивность за последнее время.\n"""+\
+        f"""Список моих эмоций за {days} дней:"""
+        for i, emotion in emotion_list.iterrows():
+            template += f"""\n{emotion.emotion_count} раз {emotion.emotion} на {emotion.emotion_ratio} из 10"""
+        template += '\n\nПроэмпатируй моим чувствам и поддержи меня. Не задавай уточняющих вопросов. Не предлагай продолжить разговор. Говори на ты.'
+    else:
+        template = f"""Ты - чуткий, поддерживающий и любящий друг. Ты говоришь как друг, а не как ассистент. За последнее время я чувствовал \n"""
+        for i, emotion in emotion_list.iterrows():
+            if i != 0:
+                template += ', '
+            template += f"""{emotion.emotion_count} раз {emotion.emotion} на {emotion.emotion_ratio} из 10"""
+        template += ". Проэмпатируй моим чувствам и поддержи меня. Не задавай уточняющих вопросов. Не предлагай продолжить разговор. Говори на ты."
     messages = [
         {"role": "user",
          "content": template
          },
     ]
-    template += '\nОтреагируй на эмоции из списка выше. Не продолжай этот список.'
     print(template)
     resp = await generate_openai_result_async(messages)
     print(resp)
