@@ -121,30 +121,43 @@ class DB:
         emotions = emotions.scalars().all()
         return emotions
 
-    async def get_emotions_for_flower(self, message: Message, days: int = 7):
+    async def get_emotions_for_flower(self, message: Message, days: int = 7,
+                                      date_first: date = None, date_second: date = None):
         user_id = message.from_id
+        if date_first is not None and date_second is not None:
+            created_filter = f"""between '{date_first}' and '{date_second} 23:59:59'"""
+        elif days is not None:
+            created_filter = f""">= now() - interval '{days} days'"""
+        else:
+            created_filter = f""">= now() - interval '7 days'"""
         statement = text(f"""
         select emotion, avg(emotion_ratio) mean_ratio
             , min(emotion_ratio) min_ratio, max(emotion_ratio) max_ratio
             , count(emotion) emotion_count, array_agg(emotion_ratio) emotion_ratio_list
         from user_emotion
-        where created_at  >= now() - interval '{days} days'
+        where created_at {created_filter}
             and user_id = {user_id}
         group by 1""")
         emotions = await self.session.execute(statement)
         emotions = pd.DataFrame(emotions)
         return emotions
 
-    async def get_emotions_for_flower_period(self, message: Message, date_first: date, date_second: date):
+    async def get_emotions_for_ai_response(self, message: Message, days: int = None,
+                                           date_first: date = None, date_second: date = None):
         user_id = message.from_id
+        if date_first is not None and date_second is not None:
+            created_filter = f"""between '{date_first}' and '{date_second} 23:59:59'"""
+        elif days is not None:
+            created_filter = f""">= now() - interval '{days} days'"""
+        else:
+            created_filter = f""">= now() - interval '7 days'"""
         statement = text(f"""
-        select emotion, avg(emotion_ratio) mean_ratio
-            , min(emotion_ratio) min_ratio, max(emotion_ratio) max_ratio
-            , count(emotion) emotion_count, array_agg(emotion_ratio) emotion_ratio_list
+        select emotion, emotion_ratio
+            , count(emotion) emotion_count
         from user_emotion
-        where created_at  between '{date_first}' and '{date_second} 23:59:59'
+        where created_at {created_filter}
             and user_id = {user_id}
-        group by 1""")
+        group by 1,2 order by 3 desc""")
         emotions = await self.session.execute(statement)
         emotions = pd.DataFrame(emotions)
         return emotions

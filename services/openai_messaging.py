@@ -15,3 +15,20 @@ async def get_response_to_emotion(emotion, intensity, trigger_first, trigger_sec
              },
         ]
     return await generate_openai_result_async(messages)
+
+
+async def get_response_to_emotion_report(emotion_list, days, sex=None):
+    template = f"""Ты - чуткий, поддерживающий и любящий друг. Ты говоришь как друг, а не как ассистент. Я напишу список эмоций твоего друга, их количество и интенсивность по шкале от 1 до 10 за последнее время. Ты должен проэмпатировать чувствам твоего друга и поддержать его в его эмоциях. Не задавай уточняющих вопросов. Не предлагай продолжить разговор. Говори на ты.\n"""+\
+    f"""Список эмоций твоего друга за {days} дней:"""
+    for i, emotion in emotion_list.iterrows():
+        template += f"""\n{emotion.emotion_count} раз {emotion.emotion} на {emotion.emotion_ratio}"""
+    messages = [
+        {"role": "user",
+         "content": template
+         },
+    ]
+    template += '\nОтреагируй на эмоции из списка выше. Не продолжай этот список.'
+    print(template)
+    resp = await generate_openai_result_async(messages)
+    print(resp)
+    return resp#await generate_openai_result_async(messages)

@@ -11,7 +11,7 @@ async def generate_openai_result_async(messages):
     response = await openai.ChatCompletion.acreate(
         model="gpt-3.5-turbo-0301",
         messages=messages,
-        max_tokens=1024,
+        # max_tokens=1024,
         #stream=True,
         # temperature=0.99
     )

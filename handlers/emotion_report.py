@@ -3,7 +3,9 @@ from aiogram.dispatcher import FSMContext
 from aiogram.types import Message, ReplyKeyboardRemove
 from aiogram.dispatcher.filters import Text, Regexp
 
+from config import config
 from services.db_interaction import DB
+from services.openai_messaging import get_response_to_emotion_report
 from states.emotion_report import EmotionReport
 from keyboards.emotion_report import *
 
@@ -33,6 +35,7 @@ async def set_custom_period(message: Message, state: FSMContext, db: DB):
 
 async def weekly_start_days(message: Message, state: FSMContext, db: DB):
     await db.log_message(message)
+    print(message)
     try:
         date_first, date_second = parse_custom_date_period(message.text)
         await send_flower(message, state, db, days=None, date_first=date_first, date_second=date_second)
@@ -43,7 +46,8 @@ async def weekly_start_days(message: Message, state: FSMContext, db: DB):
         days = int(message.text)
         await send_flower(message, state, db, days)
         return
-    except:
+    except Exception as e:
+        print(e)
         await message.reply(cant_parse_period_message, reply=False)
 
 
@@ -55,15 +59,10 @@ async def weekly_report(message: Message, state: FSMContext, db: DB):
 
 async def send_flower(message: Message, state: FSMContext, db: DB, days: int = None,
                       date_first: date = None, date_second: date = None):
-    await db.log_message(message)
     await state.set_state(EmotionReport.flower_sent)
-    if days is not None:
-        emotions = await db.get_emotions_for_flower(message, days)
-    elif date_first is not None and date_second is not None:
-        emotions = await db.get_emotions_for_flower_period(message, date_first, date_second)
-    else:
+    if days is None and date_second is None and date_first is None:
         days = 7
-        emotions = await db.get_emotions_for_flower(message, days)
+    emotions = await db.get_emotions_for_flower(message, days, date_first, date_second)
 
     if len(emotions) == 0:
         await message.reply(you_didnt_select_emotions_message, reply=False)
@@ -81,6 +80,14 @@ async def send_flower(message: Message, state: FSMContext, db: DB, days: int = N
     except:
         pass
     await state.finish()
+    if message.from_id in config.tg_bot.beta_users:
+        emotions_aggregated = await db.get_emotions_for_ai_response(message, days, date_first, date_second)
+        if date_first is not None and date_second is not None:
+            days = (date_second - date_first).days
+        user = await db.return_user_if_exist(message)
+        sex = None #user.sex
+        ai_reply_text = await get_response_to_emotion_report(emotions_aggregated, days, sex)
+        await message.reply(ai_reply_text, reply=False)
 
 
 def weekly_report_dp(dp: Dispatcher):
