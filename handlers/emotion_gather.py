@@ -4,6 +4,7 @@ from aiogram.dispatcher import FSMContext
 from aiogram.dispatcher.filters import Text
 
 from messages.common import bot_thinking_message
+from messages.user_start import main_page_message
 from services.db_interaction import DB
 
 from states.emotion_gather import EmotionGatherStates
@@ -91,7 +92,9 @@ async def emotion_gather_finish(message: Message, state: FSMContext, db: DB):
         reply_text = await get_response_to_emotion(emotion=emotion, intensity=intensity, trigger_first=trigger_first,
                                                    trigger_second=trigger_second)
         await m.delete()
-        await message.reply(reply_text, reply_markup=home_keyboard, reply=False)
+        await message.reply(reply_text, reply_markup=reaction_keyboard, reply=False)
+        # await m1.edit_reply_markup(reaction_keyboard)
+        await message.reply(main_page_message, reply_markup=home_keyboard, reply=False)
     else:
         reply_text = finish_positive_med_high_intensity_message
         await message.reply(reply_text, reply_markup=home_keyboard, reply=False)

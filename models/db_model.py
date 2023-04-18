@@ -126,3 +126,12 @@ class Feedback(Base):
     user_id = Column(BigInteger)
     feedback_text = Column(String)
     created_at = Column(DateTime, server_default=func.now())
+
+
+class AiMessageReaction(Base):
+    __tablename__ = 'ai_message_reactions'
+    ai_message_reaction_id = Column(Integer, primary_key=True, autoincrement=True)
+    user_id = Column(BigInteger)
+    bot_text = Column(String)
+    user_reaction = Column(String)
+    created_at = Column(DateTime, server_default=func.now())
