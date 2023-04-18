@@ -47,6 +47,7 @@ positive_emotions = [
     _("Самодовольство"),
     _("Интерес"),
     _("Предвкушение"),
+    _('Безмятежность')
 ]
 positive_emotion_set = set(positive_emotions)
 
