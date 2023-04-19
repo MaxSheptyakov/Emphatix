@@ -4,7 +4,7 @@ from aiogram.types import Message, ReplyKeyboardRemove
 from aiogram.dispatcher.filters import Text, Regexp
 
 from config import config
-from messages.common import bot_thinking_message
+from messages.common import bot_thinking_message, evaluate_bot_answer_message
 from messages.user_start import main_page_message
 from services.db_interaction import DB
 from services.openai_messaging import get_response_to_emotion_report
@@ -85,7 +85,7 @@ async def send_flower(message: Message, state: FSMContext, db: DB, days: int = N
         ai_reply_text = await get_response_to_emotion_report(emotions_aggregated, days, sex)
         await msg.delete()
         await message.reply(ai_reply_text, reply_markup=reaction_keyboard, reply=False)
-        await message.reply(main_page_message, reply_markup=home_keyboard, reply=False)
+        await message.reply(evaluate_bot_answer_message, reply_markup=home_keyboard, reply=False, parse_mode='MarkdownV2')
     else:
         await message.reply_photo(open(flower, 'rb'), reply_markup=home_keyboard, reply=False)
     try:
