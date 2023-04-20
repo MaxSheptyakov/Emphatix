@@ -146,7 +146,7 @@ async def trigger_gather_finish(message: Message, state: FSMContext, db: DB, is_
 def emotions_gather(dp: Dispatcher):
     dp.register_message_handler(emotion_gather_start, Text(equals=emotions_gather_button), state="*")
     dp.register_message_handler(emotion_gather_start, Text(equals=mark_first_emotion_button), state="*")
-    dp.register_message_handler(emotion_gather_start, commands=['gather_emotion'], state="*")
+    dp.register_message_handler(emotion_gather_start, commands=['emotion'], state="*")
     dp.register_message_handler(emotion_gather_start, Text(equals=show_more_emotions_button),
                                 state=EmotionGatherStates.waiting_for_emotion)
     dp.register_message_handler(write_own_emotion, Text(equals=write_own_emotion_button),

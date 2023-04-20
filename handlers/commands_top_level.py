@@ -14,7 +14,7 @@ def top_handler(dp: Dispatcher):
     dp.register_message_handler(emotion_gather_start, Text(equals=[emotions_gather_button, emotions_gather_old_button]),
                                 state="*")
     dp.register_message_handler(emotion_gather_start, Text(equals=mark_first_emotion_button), state="*")
-    dp.register_message_handler(emotion_gather_start, commands=['gather_emotion'], state="*")
+    dp.register_message_handler(emotion_gather_start, commands=['emotion'], state="*")
     dp.register_message_handler(leave_feedback, Text(equals=feedback_button), state="*")
     dp.register_message_handler(user_start, commands=["start"], state="*")
     #dp.register_message_handler(user_start, callback=main_page_button, state="*")

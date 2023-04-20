@@ -1,7 +1,10 @@
-from keyboards.common import create_keyboard, main_page_button, skip_button, create_keyboard, back_button
+from keyboards.common import create_keyboard, main_page_button, skip_button, create_keyboard, back_button, \
+    emotions_gather_button, do_not_want_button
 from localization import _
 
 dont_know_button = _('Не знаю')
+
+emotion_gather_from_push_keyboard = create_keyboard([emotions_gather_button, do_not_want_button])
 
 """New emotion choose buttons"""
 
