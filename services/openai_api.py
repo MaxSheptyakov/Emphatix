@@ -8,6 +8,7 @@ def _get_ans_from_response(response:openai.openai_object.OpenAIObject) -> str:
 
 
 async def generate_openai_result_async(messages):
+    print(messages)
     response = await openai.ChatCompletion.acreate(
         model="gpt-3.5-turbo-0301",
         messages=messages,

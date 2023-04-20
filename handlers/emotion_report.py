@@ -76,13 +76,13 @@ async def send_flower(message: Message, state: FSMContext, db: DB, days: int = N
                             reply=False)
     if message.from_id in config.tg_bot.beta_users:
         await message.reply_photo(open(flower, 'rb'), reply=False)
-        emotions_aggregated = await db.get_emotions_for_ai_response(message, days, date_first, date_second)
+        emotion_trigger_list = await db.get_emotions_for_ai_response(message, days, date_first, date_second)
         if date_first is not None and date_second is not None:
             days = (date_second - date_first).days
         user = await db.return_user_if_exist(message)
         sex = None #user.sex
         msg = await message.reply(bot_thinking_message, reply=False)
-        ai_reply_text = await get_response_to_emotion_report(emotions_aggregated, days, sex)
+        ai_reply_text = await get_response_to_emotion_report(emotion_trigger_list, days, sex)
         await msg.delete()
         await message.reply(ai_reply_text, reply_markup=reaction_keyboard, reply=False)
         await message.reply(evaluate_bot_answer_message, reply_markup=home_keyboard, reply=False, parse_mode='MarkdownV2')

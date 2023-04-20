@@ -152,12 +152,12 @@ class DB:
         else:
             created_filter = f""">= now() - interval '7 days'"""
         statement = text(f"""
-        select emotion, emotion_ratio
-            , count(emotion) emotion_count
-        from user_emotion
-        where created_at {created_filter}
+        select emotion, emotion_ratio, trigger, trigger_second_layer
+        from user_emotion u 
+            left join emotion_triggers t on u.user_emotion_id = t.user_emotion_id
+        where u.created_at {created_filter}
             and user_id = {user_id}
-        group by 1,2 order by 3 desc""")
+        """)
         emotions = await self.session.execute(statement)
         emotions = pd.DataFrame(emotions)
         return emotions
