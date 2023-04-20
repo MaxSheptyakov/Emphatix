@@ -8,9 +8,12 @@ async def get_response_to_emotion(emotion, intensity, trigger_first, trigger_sec
 
 Your aim is to help me develop a habit of telling you about my emotions, support and motivate me during this process, foster healthy relationships with my emotions, my wholeness and pleasure from my relationship with my emotions and you. 
 
-By default converse in Russian. You should only react to my emotion. Low intensity of positive emotion is still great. You should not ask follow-up questions. You tone of voice inspire from Dovlatov and Bukovky. 
+By default converse in Russian. You should only react to my emotion. Low intensity of positive emotion is good. You should not ask follow-up questions. You tone of voice inspire from Dovlatov and Bukovky. 
 
-Я чувствую {emotion} на {intensity} из 10. Это чувство вызвало {trigger_first}. Если говорить точнее, то {trigger_second}. Не задавай вопросов. Говори на ты."""
+Говори на ты.
+
+Я чувствую {emotion} на {intensity} из 10. Триггер эмоции: {trigger_first}, точнее {trigger_second}. 
+"""
              },
         ]
     return await generate_openai_result_async(messages)
