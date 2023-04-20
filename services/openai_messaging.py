@@ -3,7 +3,7 @@ from .openai_api import generate_openai_result_async
 
 
 async def get_response_to_emotion(emotion, intensity, trigger_first, trigger_second, sex=None):
-    intensity_part = '' if emotion in positive_emotion_set else f' на {intensity} из 10'
+    intensity_part = '' if emotion in positive_emotion_set else f' интенсивностью {intensity} из 10'
 
     messages = [
             {"role": "user",
@@ -29,7 +29,7 @@ Your aim is to help me develop a habit of telling you about my emotions, support
 
 Your aim for now is to get my list of emotions from the {days} days of my life and to show empathy to my feelings and to summarize my experience.  
 
-By default converse in Russian. You should only react to my emotion. You should not ask follow-up questions. You tone of voice inspire from Dovlatov and Bukovky. 
+By default converse in Russian. You only react to my emotion. You do not ask follow-up questions. You do not tell "I am sorry". You tone of voice inspire from Dovlatov and Bukovky. 
 
 Мои эмоции:
 {emotion_trigger_list_message}
@@ -40,7 +40,7 @@ By default converse in Russian. You should only react to my emotion. You should 
     for i, row in emotion_trigger_list.iterrows():
         trigger_part = f""" Триггер эмоции: {row.trigger}""" if row.trigger is not None else '\n'
         trigger_part += f""", точнее {row.trigger_second_layer}\n""" if row.trigger_second_layer is not None else '\n'
-        emotion_trigger_list_message += f"""Я {feel_msg} {row.emotion} на {row.emotion_ratio} из 10. {trigger_part}"""
+        emotion_trigger_list_message += f"""Я {feel_msg} {row.emotion} интенсивностью {row.emotion_ratio} из 10. {trigger_part}"""
     message = message.format(emotion_trigger_list_message=emotion_trigger_list_message, days=days)
 
     messages = [
