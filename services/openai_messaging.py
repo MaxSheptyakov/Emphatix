@@ -42,5 +42,4 @@ By default converse in Russian. You should only react to my emotion. You should 
          "content": message
          },
     ]
-    print(messages)
     return await generate_openai_result_async(messages)
