@@ -51,6 +51,8 @@ home_buttons = [emotions_gather_button, report_button,
                   description_button, settings_button, feedback_button]
 home_keyboard = create_keyboard(home_buttons, row_width=2)
 
+main_page_keyboard = create_keyboard(main_page_button)
+
 
 """Quantity keyboard"""
 quantity_buttons = [_('Всегда'), _('В большинстве случаев'), _("Иногда"), _('Редко'), _('Никогда')]

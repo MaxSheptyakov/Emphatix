@@ -2,6 +2,7 @@ import asyncio
 from aiogram.utils.exceptions import BotBlocked
 
 from bot_init import bot, dp, logger, config, create_sessionmaker
+from handlers.dialog import dialog_handler
 
 from handlers.user_start import register_user
 from handlers.onboarding import onboarding
@@ -29,6 +30,7 @@ async def main():
 
     # TODO -- add needed handlers only
     top_handler(dp)
+    dialog_handler(dp)
     onboarding(dp)
     emotions_gather(dp)
     register_user(dp)
