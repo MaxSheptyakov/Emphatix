@@ -4,4 +4,4 @@ services:
   bot:
     build: .
     container_name: bot
-    command: bash -c "python request_handler.py"
+    command: bash -c "python app.py"
