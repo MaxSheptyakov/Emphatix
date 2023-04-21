@@ -212,6 +212,7 @@ class DB:
                         and e.user_id = {message.from_id}
                 where t.created_at >= now() - interval '{days} days'
                     and t.trigger = '{message.text}'
+                    and t.trigger_second_layer is not null
                 group by 1
                 order by 2 desc
                 limit 10;""")
