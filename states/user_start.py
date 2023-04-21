@@ -7,3 +7,6 @@ class UserMain(StatesGroup):
     feedback = State()
     show_report = State()
     buy_pro = State()
+
+class Dialog(StatesGroup):
+    dialog_started = State()

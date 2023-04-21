@@ -20,10 +20,14 @@ def prep_to_chart_loc_on_start(x):
     if x.shape[0] == 0:
         return x
     x.reset_index(drop=True, inplace=True)
-    x = x.append(pd.Series([x.iloc[0].emotion, 0, None, None, None, None, x.iloc[0].emotion_type],
-                             index = x.columns, name=0))
-    x = x.append(pd.Series([x.iloc[0].emotion, x.iloc[0].mean_ratio, None, None, None, None, x.iloc[0].emotion_type],
-                             index = x.columns, name=0))
+    x = pd.concat([x, pd.DataFrame([[x.iloc[0].emotion, 0, None, None, None, None, x.iloc[0].emotion_type]],
+                                   columns=x.columns)])
+    x = pd.concat([x, pd.DataFrame([[x.iloc[0].emotion, x.iloc[0].mean_ratio, None, None, None, None, x.iloc[0].emotion_type]],
+                                   columns=x.columns)])
+    # x = x.append(pd.Series([x.iloc[0].emotion, 0, None, None, None, None, x.iloc[0].emotion_type],
+    #                          index = x.columns, name=0))
+    # x = x.append(pd.Series([x.iloc[0].emotion, x.iloc[0].mean_ratio, None, None, None, None, x.iloc[0].emotion_type],
+    #                          index = x.columns, name=0))
     return x
 
 

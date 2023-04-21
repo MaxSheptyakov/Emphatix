@@ -1,7 +1,10 @@
-from keyboards.common import create_keyboard, main_page_button, skip_button, create_keyboard, back_button
+from keyboards.common import create_keyboard, main_page_button, skip_button, create_keyboard, back_button, \
+    emotions_gather_button, do_not_want_button
 from localization import _
 
 dont_know_button = _('Не знаю')
+
+emotion_gather_from_push_keyboard = create_keyboard([emotions_gather_button, do_not_want_button])
 
 """New emotion choose buttons"""
 
@@ -17,6 +20,8 @@ first_emotion_list = emotions = [
     _("Предвкушение"),
     _("Удивление"),
     _("Стыд"),
+    _('Усталость'),
+    _('Вдохновение'),
     _("Счастье"),
     _("Восхищение"),
     _("Разочарование"),
@@ -47,6 +52,7 @@ positive_emotions = [
     _("Самодовольство"),
     _("Интерес"),
     _("Предвкушение"),
+    _('Безмятежность')
 ]
 positive_emotion_set = set(positive_emotions)
 
@@ -71,10 +77,17 @@ triggers_dict = {
         _("Незнакомые люди"),
         _("Общение в Интернете"),
     ),
-    _("Работа и учеба"): (
+    _("Работа"): (
         _("Офис"),
+        _("Коллеги"),
+        _("Проект"),
         _("Удалённая работа"),
-        _("Школа/Университет"),
+    ),
+    _("Учёба"): (
+        _("Университет"),
+        _("Обучающие курсы"),
+        _("Преподаватель"),
+        _("Одногруппники"),
     ),
     _("Домашние дела"): (
         _("Уборка"),
@@ -112,7 +125,7 @@ triggers_dict = {
         _("Компьютерные игры"),
         _("Интернет и социальные сети"),
     ),
-    _("Еда и напитки"): (
+    _("Пищевое поведение"): (
         _("Рестораны"),
         _("Кулинария"),
         _("Алкоголь"),
