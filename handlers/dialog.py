@@ -1,4 +1,4 @@
-from keyboards.common import main_page_keyboard
+from keyboards.common import main_page_keyboard, talk_to_me_button
 from messages.common import *
 from aiogram.types import Message
 from aiogram import Dispatcher
@@ -8,13 +8,18 @@ from services.openai_messaging import run_dialog
 from states.user_start import Dialog
 from services.db_interaction import DB
 import json
+from aiogram.dispatcher.filters import Text
 
 
 async def start_dialog(message: Message, state: FSMContext, db: DB):
     await db.log_message(message)
-    await state.set_state(Dialog.dialog_started)
-    dialog_messages = await state.get_data()
-    dialog_messages = dialog_messages.get('dialog_messages')
+    if message.text == talk_to_me_button or message.text == '/dialog':
+        await state.finish()
+        dialog_messages = None
+    else:
+        await state.set_state(Dialog.dialog_started)
+        data = await state.get_data()
+        dialog_messages = data.get('dialog_messages')
     if dialog_messages is None:
         pass
     else:
@@ -30,9 +35,9 @@ async def start_dialog(message: Message, state: FSMContext, db: DB):
     if get_total_tokens(response) > 3200:
         dialog_messages = dialog_messages[1:]
     await state.update_data(dialog_messages=json.dumps(dialog_messages))
-    data = await state.get_data()
 
 
 def dialog_handler(dp: Dispatcher):
     dp.register_message_handler(start_dialog, commands=['dialog'], state='*')
+    dp.register_message_handler(start_dialog, Text(equals=talk_to_me_button), state='*')
     dp.register_message_handler(start_dialog, state=Dialog.dialog_started)

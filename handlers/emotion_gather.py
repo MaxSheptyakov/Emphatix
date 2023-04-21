@@ -87,7 +87,7 @@ async def emotion_gather_finish(message: Message, state: FSMContext, db: DB):
     intensity = data.get('emotion_intensity')
     trigger_first = data.get('trigger')
     trigger_second = data.get('trigger_second_layer')
-    if emotion is not None and intensity is not None and message.from_id in config.tg_bot.beta_users:
+    if emotion is not None and intensity is not None and True:# message.from_id in config.tg_bot.beta_users:
         m = await message.reply(bot_thinking_message, reply=False)
         reply_text = await get_response_to_emotion(emotion=emotion, intensity=intensity, trigger_first=trigger_first,
                                                    trigger_second=trigger_second)

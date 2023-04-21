@@ -74,7 +74,7 @@ async def send_flower(message: Message, state: FSMContext, db: DB, days: int = N
     else:
         await message.reply(period_you_marked_message.format(date_first=date_first, date_second=date_second),
                             reply=False)
-    if message.from_id in config.tg_bot.beta_users:
+    if True:# message.from_id in config.tg_bot.beta_users:
         await message.reply_photo(open(flower, 'rb'), reply=False)
         emotion_trigger_list = await db.get_emotions_for_ai_response(message, days, date_first, date_second)
         if date_first is not None and date_second is not None:

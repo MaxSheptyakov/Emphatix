@@ -29,6 +29,7 @@ settings_button = _('⚙️Настройка уведомлений')
 emotions_gather_button = _('✅️Отметить эмоцию')
 emotions_gather_old_button = _('✔️Отметить эмоцию')
 do_not_want_button = _('🚫Сейчас не хочу')
+talk_to_me_button = _("💬Поговори со мной")
 
 emotions_recap_button = _("📄Список эмоций за период")
 report_button = _("📈Отчёт по эмоциям")
@@ -47,8 +48,8 @@ dont_know_button = _('Не знаю')
 # try_pro_button = _('🗝️Попробовать PRO версию')
 
 home_buttons = [emotions_gather_button, report_button,
-                  emotions_recap_button, triggers_report_button,
-                  description_button, settings_button, feedback_button]
+                triggers_report_button, talk_to_me_button, emotions_recap_button,
+                settings_button, description_button, feedback_button]
 home_keyboard = create_keyboard(home_buttons, row_width=2)
 
 main_page_keyboard = create_keyboard(main_page_button)
