@@ -26,6 +26,12 @@ thanks_keyboard = create_keyboard([thanks_button], with_main=False, row_width=1,
 continue_onboarding_button = _('Продолжить онбординг')
 
 
+'''Choose genders'''
+choose_genders = ReplyKeyboardMarkup(resize_keyboard=True, row_width=3)
+genders = [_("Мужской"),_("Женский"),_("Неопределенный"),_("Трансгендерный"),_("Бигендерный"),
+           _("Гендерфлюидный"),_("Небинарный"),_("Андрогинный")]
+
+choose_genders.add(*genders)
 
 
 
