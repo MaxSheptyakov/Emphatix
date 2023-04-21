@@ -125,3 +125,4 @@ venv.bak/
 dmypy.json
 
 bot.ini
+commands.sql
