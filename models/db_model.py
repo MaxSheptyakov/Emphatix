@@ -23,7 +23,6 @@ class User(Base):
     username = Column(String)
     first_name = Column(String)
     last_name = Column(String)
-    sex = Column(String, ForeignKey("onboarding_answer.sex"), index=True)
     language_code = Column(String)
     completed_questionnaire = Column(Boolean, default=False)
     hour_diff = Column(Integer, default=0)
