@@ -395,7 +395,9 @@ class DB:
         )
         self.session.add(q)
         update_statement = update(SendSchedule).filter_by(user_id=user_id).values(active=False)
+        update_user = update(User).filter_by(user_id=user_id).values(sex=user_data.get('sex'))
         await self.session.execute(update_statement)
+        await self.session.execute(update_user)
         await self.session.commit()
         await self.update_schedule_data(message=message, state=state)
 
