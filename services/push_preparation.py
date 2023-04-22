@@ -13,8 +13,8 @@ def prepare_push(push):
         keyboard = None
     elif push.send_type == SendTypes.EMOTION_COLLECT:
         push_text = what_emotion_do_you_feel_message[randint(0, len(what_emotion_do_you_feel_message) - 1)]
-        keyboard = reaction_keyboard
-        # keyboard = create_keyboard([emotions_gather_button, do_not_want_button])
+        # keyboard = reaction_keyboard
+        keyboard = create_keyboard([emotions_gather_button, do_not_want_button])
     elif push.send_type == SendTypes.WEEKLY_REPORT:
         push_text = start_weekly_report_message
         keyboard = create_keyboard(get_weekly_report_button)
