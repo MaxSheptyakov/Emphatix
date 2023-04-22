@@ -6,6 +6,7 @@ from keyboards.common import yes_no_keyboard, create_keyboard#, buy_pro_keyboard
 from keyboards.emotion_report import weekly_start_keyboard
 from messages.emotion_report import start_weekly_report_message
 from messages.emotion_gather import what_emotion_do_you_feel_message
+from models.db_model import SendTypes
 from states.emotion_report import EmotionReport
 from states.user_start import UserMain
 from states.emotion_gather import EmotionGatherStates
@@ -43,17 +44,17 @@ async def prepare_message_to_send(message, middleware):
     return message_text, state, keyboard
 
 
-async def prepare_premium_message_to_send(premium_type):
-    if premium_type == 'Freemium':
-        message_text = premium_freemium_expiring_message
-        keyboard = buy_pro_keyboard
-        #keyboard = create_keyboard(buttons_1, with_main=False, one_time=False, row_width=3)
-        # keyboard = first_choose_emotion_keyboard
-    else:
-        message_text = premium_expiring_message
-        keyboard = buy_pro_keyboard
-    state = UserMain.on_start
-    return message_text, state, keyboard
+# async def prepare_premium_message_to_send(premium_type):
+#     if premium_type == 'Freemium':
+#         message_text = premium_freemium_expiring_message
+#         keyboard = buy_pro_keyboard
+#         #keyboard = create_keyboard(buttons_1, with_main=False, one_time=False, row_width=3)
+#         # keyboard = first_choose_emotion_keyboard
+#     else:
+#         message_text = premium_expiring_message
+#         keyboard = buy_pro_keyboard
+#     state = UserMain.on_start
+#     return message_text, state, keyboard
 
 
 
@@ -106,15 +107,6 @@ async def check_tries(state):
     return misses
 
 
-async def set_defaults_for_technique(technique, technique_number, state):
-    await state.update_data(exercise=technique)
-    await state.update_data(exercise_id=technique_number)
-    await state.update_data(exercise_text_id=generate_random_string(10))
-    stage = 0
-    await state.update_data(stage=stage)
-    return stage
-
-
 def string_to_int(x):
     try:
         return (int(x))
@@ -122,63 +114,11 @@ def string_to_int(x):
         return False
 
 
-def parse_arca_payment_status(status):
-    status_dict = {0: 'not_paid',
-                   1:'money_hold',
-                   2: 'succeeded',
-                   3:'auth_cancelled',
-                   4:'returned',
-                   5:'auth_init',
-                   6:'auth_declined'}
-    if status_dict.get(status) is not None:
-        return status_dict.get(status)
-    else:
-        return 'unknown'
-
-
-def parse_period_from_message(period):
-    if period in (pro_variant_1_button, pro_variant_1_foreign_button):
-        days = 7
-    elif period in (pro_variant_2_button, pro_variant_2_discount_button, pro_variant_2_foreign_discount_button,
-                    pro_variant_2_foreign_button):
-        days = 30
-    elif period in (pro_variant_3_button, pro_variant_3_foreign_button):
-        days = 365
-    elif isinstance(period, int):
-        days = period
-    elif string_to_int(period):
-        days = string_to_int(period)
-    else:
-        return None
-    return days
-
-
 class UnknownPaymentVariant(Exception):
     "No user_id passed to metadata"
     def __init__(self, message="Unknown payment variant"):
         self.message = message
         super().__init__(self.message)
-
-def parse_amount_from_message(message):
-    if message == pro_variant_1_button:
-        value = 149.
-    elif message == pro_variant_2_button:
-        value = 499
-    elif message == pro_variant_3_button:
-        value = 1249
-    elif message == pro_variant_2_discount_button:
-        value = 349
-    elif message == pro_variant_1_foreign_button:
-        value = 90000
-    elif message == pro_variant_2_foreign_button:
-        value = 300000
-    elif message == pro_variant_3_foreign_button:
-        value = 750000
-    elif message == pro_variant_2_foreign_discount_button:
-        value = 210000
-    else:
-        raise UnknownPaymentVariant
-    return value
 
 
 def flatten(l):

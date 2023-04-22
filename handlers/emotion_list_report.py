@@ -55,7 +55,7 @@ async def emotion_report(message: Message, state: FSMContext, db: DB,
     for emotion in emotions:
         reply += emotion_template_message.format(emotion=emotion.emotion,
                                                  emotion_ratio=emotion.emotion_ratio,
-                                                 timestamp=(emotion.created_at + timedelta(hours=hour_diff)).strftime("%H:%M"))
+                                                 timestamp=(emotion.created_at + timedelta(hours=hour_diff)).strftime("%Y-%m-%d %H:%M"))
     await message.reply(reply, reply=False)
     await state.finish()
     await user_start(message=message, state=state, db=db)

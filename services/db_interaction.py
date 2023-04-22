@@ -121,30 +121,43 @@ class DB:
         emotions = emotions.scalars().all()
         return emotions
 
-    async def get_emotions_for_flower(self, message: Message, days: int = 7):
+    async def get_emotions_for_flower(self, message: Message, days: int = 7,
+                                      date_first: date = None, date_second: date = None):
         user_id = message.from_id
+        if date_first is not None and date_second is not None:
+            created_filter = f"""between '{date_first}' and '{date_second} 23:59:59'"""
+        elif days is not None:
+            created_filter = f""">= now() - interval '{days} days'"""
+        else:
+            created_filter = f""">= now() - interval '7 days'"""
         statement = text(f"""
         select emotion, avg(emotion_ratio) mean_ratio
             , min(emotion_ratio) min_ratio, max(emotion_ratio) max_ratio
             , count(emotion) emotion_count, array_agg(emotion_ratio) emotion_ratio_list
         from user_emotion
-        where created_at  >= now() - interval '{days} days'
+        where created_at {created_filter}
             and user_id = {user_id}
         group by 1""")
         emotions = await self.session.execute(statement)
         emotions = pd.DataFrame(emotions)
         return emotions
 
-    async def get_emotions_for_flower_period(self, message: Message, date_first: date, date_second: date):
+    async def get_emotions_for_ai_response(self, message: Message, days: int = None,
+                                           date_first: date = None, date_second: date = None):
         user_id = message.from_id
+        if date_first is not None and date_second is not None:
+            created_filter = f"""between '{date_first}' and '{date_second} 23:59:59'"""
+        elif days is not None:
+            created_filter = f""">= now() - interval '{days} days'"""
+        else:
+            created_filter = f""">= now() - interval '7 days'"""
         statement = text(f"""
-        select emotion, avg(emotion_ratio) mean_ratio
-            , min(emotion_ratio) min_ratio, max(emotion_ratio) max_ratio
-            , count(emotion) emotion_count, array_agg(emotion_ratio) emotion_ratio_list
-        from user_emotion
-        where created_at  between '{date_first}' and '{date_second} 23:59:59'
+        select emotion, emotion_ratio, trigger, trigger_second_layer
+        from user_emotion u 
+            left join emotion_triggers t on u.user_emotion_id = t.user_emotion_id
+        where u.created_at {created_filter}
             and user_id = {user_id}
-        group by 1""")
+        """)
         emotions = await self.session.execute(statement)
         emotions = pd.DataFrame(emotions)
         return emotions
@@ -199,6 +212,7 @@ class DB:
                         and e.user_id = {message.from_id}
                 where t.created_at >= now() - interval '{days} days'
                     and t.trigger = '{message.text}'
+                    and t.trigger_second_layer is not null
                 group by 1
                 order by 2 desc
                 limit 10;""")
@@ -374,10 +388,12 @@ class DB:
         user_id = message.from_id
         user = await self.return_user_if_exist(message)
         user_chosen_times = user_data.get('user_chosen_times')
+        current_time = user_data.get('current_time') + ':00' if ':' not in user_data.get('current_time') \
+            and user_data.get('current_time') is not None else None
         server_current_time = parser.parse(user_data.get('server_current_time')).time() \
             if user_data.get('server_current_time') else None
-        current_time = parser.parse(user_data.get('current_time')).time() \
-            if user_data.get('current_time') else None
+        current_time = parser.parse(current_time).time() \
+            if current_time else None
         q = OnboardingAnswer(
             user_id=user_id,
             current_time=current_time,
@@ -408,8 +424,10 @@ class DB:
         user_chosen_times = user_data.get('user_chosen_times')
         server_current_time = parser.parse(user_data.get('server_current_time')).time()\
                 if user_data.get('server_current_time') else None
-        current_time = parser.parse(user_data.get('current_time')).time() \
-            if user_data.get('current_time') else None
+        current_time = user_data.get('current_time') + ':00' if ':' not in user_data.get('current_time') \
+                                                                and user_data.get('current_time') is not None else None
+        current_time = parser.parse(current_time).time() \
+            if current_time else None
         update_statement = update(SendSchedule).filter_by(user_id=user_id).values(active=False)
         await self.session.execute(update_statement)
         hour_diff = get_hour_diff(current_time, server_current_time)

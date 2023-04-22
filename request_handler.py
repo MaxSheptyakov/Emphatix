@@ -2,6 +2,7 @@ import asyncio
 from aiogram.utils.exceptions import BotBlocked
 
 from bot_init import bot, dp, logger, config, create_sessionmaker
+from handlers.dialog import dialog_handler
 
 from handlers.user_start import register_user
 from handlers.onboarding import onboarding
@@ -11,7 +12,6 @@ from handlers.common import common_handler
 from handlers.emotion_list_report import daily_report
 from handlers.trigger_report import trigger_report_register
 from handlers.commands_top_level import top_handler
-from handlers.test_handler import test_handler
 from middlewares.db import DbMiddleware
 
 
@@ -29,8 +29,8 @@ async def main():
     dp.middleware.setup(DbMiddleware(async_sessionmaker))
 
     # TODO -- add needed handlers only
-    test_handler(dp)
     top_handler(dp)
+    dialog_handler(dp)
     onboarding(dp)
     emotions_gather(dp)
     register_user(dp)

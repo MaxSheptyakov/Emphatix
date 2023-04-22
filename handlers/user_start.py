@@ -1,5 +1,3 @@
-import asyncio
-
 from aiogram import Dispatcher
 from aiogram.dispatcher import FSMContext
 from aiogram.types import Message
@@ -8,18 +6,12 @@ from aiogram.dispatcher.filters import Text
 from services.db_interaction import DB
 from states.user_start import UserMain
 from aiogram.types import ReplyKeyboardRemove
-from keyboards.user_start import *
 from keyboards.common import *
 
 from keyboards.common import main_page_button, description_button
 from messages.user_start import *
 from handlers.onboarding import onboarding_first_step
-from messages.common import *
-from states.onboarding import QuestionnaireStates
-from keyboards.onboarding import choose_time_keyboard
 
-from services.payment_generation import create_payment_link
-from aiogram import types
 
 async def user_start(message: Message, db: DB, state: FSMContext):
     user = await db.add_user(message)
