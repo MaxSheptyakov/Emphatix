@@ -3,6 +3,7 @@ from aiogram.dispatcher.filters.state import StatesGroup, State
 
 class OnboardingStates(StatesGroup):
     current_time = State()
+    gender = State()
     frequency = State()
     custom_frequency = State()
     on_start = State()
@@ -11,7 +12,7 @@ class OnboardingStates(StatesGroup):
     second = State()
     third = State()
     forth = State()
-    how_know_about_us = State()
+    how_know_about_me = State()
     psychiatrist = State()
     sixth = State()
     seventh = State()

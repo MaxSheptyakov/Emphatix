@@ -2,7 +2,7 @@ import asyncio
 
 from aiogram import Dispatcher
 from aiogram.dispatcher import FSMContext
-from aiogram.types import Message
+from aiogram.types import Message, ReplyKeyboardRemove
 
 from keyboards.common import settings_button, home_keyboard
 from services.common import work_with_multiple_selection, custom_field_chosen
@@ -17,15 +17,26 @@ from aiogram.dispatcher.filters import Text
 from states.user_start import UserMain
 from datetime import datetime
 
-
 async def onboarding_first_step(message: Message, state: FSMContext, db: DB):
     await db.log_message(message)
     await state.set_state(OnboardingStates.first)
     await message.reply(onboarding_first_message, reply_markup=onboarding_first_keyboard, reply=False)
 
+async def onboarding_choose_gender(message: Message, state: FSMContext, db: DB):
+    await db.log_message(message)
+    await state.set_state(OnboardingStates.gender)
+    await message.reply(choose_gender_message, reply_markup=choose_genders, reply=False)
+
+async def how_did_you_know_about_me(message: Message, state: FSMContext, db: DB):
+    await db.log_message(message)
+    await state.update_data(sex=message.text)
+    await state.set_state(OnboardingStates.how_know_about_me)
+    await message.reply(how_did_you_know_about_me_message, reply_markup=ReplyKeyboardRemove(), reply=False)
+
 
 async def questionnaire_current_time(message: Message, state: FSMContext, db: DB):
     await db.log_message(message)
+    await state.update_data(how_did_you_know_about_us=message.text)
     settings = (message.text == settings_button)
     if message.text == settings_button:
         await state.update_data(settings=True)
@@ -73,8 +84,12 @@ async def questionnaire_end_0(message: Message, state: FSMContext, db: DB):
 def onboarding(dp: Dispatcher):
     dp.register_message_handler(onboarding_first_step, commands=['onboarding'], state="*")
     dp.register_message_handler(questionnaire_current_time, Text(equals=settings_button), state="*")
-    dp.register_message_handler(questionnaire_current_time, Text(equals=onboarding_first_button),
+    dp.register_message_handler(onboarding_choose_gender, Text(equals=onboarding_first_button),
                                 state=OnboardingStates.first)
+    dp.register_message_handler(how_did_you_know_about_me, Text(equals=genders),
+                                state=OnboardingStates.gender)
+    dp.register_message_handler(questionnaire_current_time,
+                                state=OnboardingStates.how_know_about_me)
     dp.register_message_handler(questionnaire_how_many_times_ask, Text(equals=available_times),
                                 state=OnboardingStates.current_time)
     dp.register_message_handler(questionnaire_manual_frequency_choose, Text(equals=setup_manually_button),

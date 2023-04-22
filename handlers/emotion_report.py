@@ -22,6 +22,11 @@ from services.common import parse_custom_date_period
 
 async def emotion_report_variants(message: Message, state: FSMContext, db: DB):
     await db.log_message(message)
+    user = await db.return_user_if_exist(message)
+    if not user.completed_questionnaire:
+        from handlers.onboarding import onboarding_first_step
+        await onboarding_first_step(message=message, state=state, db=db)
+        return
     await state.set_state(EmotionReport.show_report)
     if message.text == custom_period_button:
         await message.reply(custom_period_message, reply_markup=ReplyKeyboardRemove(), reply=False)
@@ -80,7 +85,7 @@ async def send_flower(message: Message, state: FSMContext, db: DB, days: int = N
         if date_first is not None and date_second is not None:
             days = (date_second - date_first).days
         user = await db.return_user_if_exist(message)
-        sex = None #user.sex
+        sex = user.sex
         msg = await message.reply(bot_thinking_message, reply=False)
         ai_reply_text = await get_response_to_emotion_report(emotion_trigger_list, days, sex)
         await msg.delete()
