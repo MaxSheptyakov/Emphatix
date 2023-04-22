@@ -71,9 +71,6 @@ async def work_with_multiple_selection(message, available_messages, state, param
         await state.update_data({parameter: state_data})
     return state_data
 
-async def set_gender(message, state, parameter):
-    await state.update_data({parameter: message.text})
-    return message.text
 
 async def custom_field_chosen(state, field_name):
     user_data = await state.get_data()

@@ -12,7 +12,7 @@ class OnboardingStates(StatesGroup):
     second = State()
     third = State()
     forth = State()
-    how_know_about_us = State()
+    how_know_about_me = State()
     psychiatrist = State()
     sixth = State()
     seventh = State()

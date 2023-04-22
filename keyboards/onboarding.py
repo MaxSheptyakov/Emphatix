@@ -28,8 +28,7 @@ continue_onboarding_button = _('Продолжить онбординг')
 
 '''Choose genders'''
 choose_genders = ReplyKeyboardMarkup(resize_keyboard=True, row_width=3)
-genders = [_("Мужской"),_("Женский"),_("Неопределенный"),_("Трансгендерный"),_("Бигендерный"),
-           _("Гендерфлюидный"),_("Небинарный"),_("Андрогинный")]
+genders = [_("Мужской"),_("Женский"),_("Другой"),_('Пропустить')]
 
 choose_genders.add(*genders)
 
