@@ -17,11 +17,6 @@ from aiogram.dispatcher.filters import Text
 from states.user_start import UserMain
 from datetime import datetime
 
-# import logging
-
-# logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-# logger = logging.getLogger(__name__)
-
 async def onboarding_first_step(message: Message, state: FSMContext, db: DB):
     await db.log_message(message)
     await state.set_state(OnboardingStates.first)
