@@ -126,3 +126,9 @@ def flatten(l):
         else:
             res.append(x)
     return res
+
+
+def get_sex_promt_part_ru(sex):
+    sex_part = ' Обращайся ко мне в мужском роде.' if sex == 'Мужской' \
+        else ' Обращайся ко мне в женском роде' if sex == 'Женский' else ''
+    return sex_part

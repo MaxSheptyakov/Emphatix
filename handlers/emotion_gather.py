@@ -20,18 +20,13 @@ from config import config
 from services.openai_messaging import get_response_to_emotion
 
 
-# async def emotion_gather_start(message: Message, state: FSMContext, db: DB):
-#     await db.log_message(message)
-#     await state.set_state(EmotionGatherStates.waiting_for_emotion)
-#     async with state.proxy() as data:
-#         if data.get('premium') is None:
-#             data['premium'] = await db.has_user_premium(message)
-#     emotions_list = await db.get_emotions_sorted_one_list(message)
-#     keyboard = create_inline_keyboard(emotions_list, with_main=True, row_width=3)
-#     await message.reply(what_emotion_do_you_feel_message, reply_markup=ReplyKeyboardRemove(), reply=False)
-#     await message.reply(select_multuple_if_you_want, reply_markup=keyboard, reply=False)
 async def emotion_gather_start(message: Message, state: FSMContext, db: DB):
     await db.log_message(message)
+    user = await db.return_user_if_exist(message)
+    if not user.completed_questionnaire:
+        from handlers.onboarding import onboarding_first_step
+        await onboarding_first_step(message=message, state=state, db=db)
+        return
     await state.set_state(EmotionGatherStates.waiting_for_emotion)
     async with state.proxy() as data:
         if data.get('premium') is None:
@@ -82,6 +77,7 @@ async def intensity_gather_finish(message: Message, state: FSMContext, db: DB):
 
 async def emotion_gather_finish(message: Message, state: FSMContext, db: DB):
     await db.log_message(message)
+    user = await db.return_user_if_exist(message)
     data = await state.get_data()
     emotion = data.get('user_emotion')
     intensity = data.get('emotion_intensity')
@@ -90,7 +86,7 @@ async def emotion_gather_finish(message: Message, state: FSMContext, db: DB):
     if emotion is not None and intensity is not None and True:# message.from_id in config.tg_bot.beta_users:
         m = await message.reply(bot_thinking_message, reply=False)
         reply_text = await get_response_to_emotion(emotion=emotion, intensity=intensity, trigger_first=trigger_first,
-                                                   trigger_second=trigger_second)
+                                                   trigger_second=trigger_second, sex=user.sex)
         await m.delete()
         await message.reply(reply_text, reply_markup=reaction_keyboard, reply=False)
         # await m1.edit_reply_markup(reaction_keyboard)
