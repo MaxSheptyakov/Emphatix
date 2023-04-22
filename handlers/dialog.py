@@ -20,6 +20,7 @@ async def start_dialog(message: Message, state: FSMContext, db: DB):
         return
     if message.text == talk_to_me_button or message.text == '/dialog':
         await state.finish()
+        await state.set_state(Dialog.dialog_started)
         dialog_messages = None
     else:
         await state.set_state(Dialog.dialog_started)
