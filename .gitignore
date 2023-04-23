@@ -126,3 +126,4 @@ dmypy.json
 
 bot.ini
 commands.sql
+mypy.ini
