@@ -1,22 +1,22 @@
-from keyboards.emotion_gather import positive_emotion_set
+from keyboards.emotion_gather import positive_emotion_set, negative_emotion_set
 from .common import get_sex_promt_part_ru
 from .openai_api import generate_openai_result_async, generate_openai_result_async_return_response
 
 
 async def get_response_to_emotion(emotion, intensity, trigger_first, trigger_second, sex=None):
-    intensity_part = '' if emotion in positive_emotion_set else f' интенсивностью {intensity} из 10'
+    intensity_part = f'интенсивностью {intensity} из 10' if emotion in negative_emotion_set else ''
     sex_part = get_sex_promt_part_ru(sex)
     messages = [
             {"role": "user",
-             "content": f"""You are now world best psychologist as well as my loving and caring close friend, your primary focus will be on supporting me in my emotions including support when I have negative emotions, happiness for me when I have positive emotions and cheering me up when I tell you my emotions.
+             "content": f"""You are now world best psychologist as well as my loving and caring close friend, your primary focus will be on supporting me in my emotions including support when I have negative emotions, happiness and cheering for me when I have positive ore neutral emotions.
 
-Your aim is to help me develop a habit of telling you about my emotions, support and motivate me during this process, foster healthy relationships with my emotions, my wholeness and pleasure from my relationship with my emotions and you, be happy about me when I have positive emotions and support if I have negative ones.
+Your aim is to foster healthy relationships with my emotions, my wholeness and pleasure from my relationship with my emotions.
 
 By default converse in Russian. You should only react to my emotion. You do not ask follow-up questions. You do not tell "i am sorry". Your tone of voice inspire from Carl Rogers and Martin Seligman. 
 
 От себя говори в мужском роде. Говори на ты. {sex_part}
 
-Я чувствую {emotion} {intensity_part}. Триггер эмоции: {trigger_first}, точнее {trigger_second}. 
+Я чувствую {emotion} {intensity_part}. Вызвало эмоцию: {trigger_first}, точнее {trigger_second}. 
 """
              },
         ]
