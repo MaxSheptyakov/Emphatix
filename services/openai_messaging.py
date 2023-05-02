@@ -1,3 +1,4 @@
+from keyboards.common import skip_button
 from keyboards.emotion_gather import positive_emotion_set, negative_emotion_set
 from .common import get_sex_promt_part_ru
 from .openai_api import generate_openai_result_async, generate_openai_result_async_return_response
@@ -6,6 +7,7 @@ from .openai_api import generate_openai_result_async, generate_openai_result_asy
 async def get_response_to_emotion(emotion, intensity, trigger_first, trigger_second, sex=None):
     intensity_part = f'интенсивностью {intensity} из 10' if emotion in negative_emotion_set else ''
     sex_part = get_sex_promt_part_ru(sex)
+    trigger_part = f'Вызвало эмоцию: {trigger_first}, точнее {trigger_second}.' if trigger_first != skip_button else ''
     messages = [
             {"role": "user",
              "content": f"""You are now world best psychologist as well as my loving and caring close friend, your primary focus will be on supporting me in my emotions including support when I have negative emotions, happiness and cheering for me when I have positive ore neutral emotions.
@@ -16,7 +18,7 @@ By default converse in Russian. You should only react to my emotion. You do not 
 
 От себя говори в мужском роде. Говори на ты. {sex_part}
 
-Я чувствую {emotion} {intensity_part}. Вызвало эмоцию: {trigger_first}, точнее {trigger_second}. 
+Я чувствую {emotion} {intensity_part}. {trigger_part}
 """
              },
         ]
@@ -40,7 +42,7 @@ By default converse in Russian. You only react to my emotion. You do not ask fol
     emotion_trigger_list_message = ''
     feel_msg = 'чувствовала' if sex == 'Female' else 'чувствовал'
     for i, row in emotion_trigger_list.iterrows():
-        trigger_part = f""" Триггер эмоции: {row.trigger}""" if row.trigger is not None else '\n'
+        trigger_part = f""" Триггер эмоции: {row.trigger}""" if row.trigger is not None and row.trigger != skip_button else '\n'
         trigger_part += f""", точнее {row.trigger_second_layer}\n""" if row.trigger_second_layer is not None else '\n'
         emotion_trigger_list_message += f"""Я {feel_msg} {row.emotion} интенсивностью {row.emotion_ratio} из 10. {trigger_part}"""
     message = message.format(emotion_trigger_list_message=emotion_trigger_list_message, days=days, sex_part=sex_part)
