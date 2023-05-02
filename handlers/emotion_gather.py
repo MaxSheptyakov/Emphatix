@@ -155,7 +155,7 @@ def emotions_gather(dp: Dispatcher):
     dp.register_message_handler(intensity_gather_start,
                                 state=EmotionGatherStates.write_own_emotion_state)
 
-    dp.register_message_handler(intensity_gather_finish, Text(equals=intensity_buttons),
+    dp.register_message_handler(intensity_gather_finish, Text(equals=intensity_buttons + dont_know_intensity_buttons),
                                 state=EmotionGatherStates.waiting_for_intensity)
 
 
