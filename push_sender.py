@@ -3,7 +3,6 @@ import asyncio
 from aiogram.utils.exceptions import BotBlocked
 from config import config
 from keyboards.emotion_gather import emotion_gather_from_push_keyboard
-from messages.common import evaluate_bot_question_message
 from middlewares.db import DbMiddleware
 
 
