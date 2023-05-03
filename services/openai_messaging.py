@@ -5,46 +5,63 @@ from .openai_api import generate_openai_result_async, generate_openai_result_asy
 
 
 async def get_response_to_emotion(emotion, intensity, trigger_first, trigger_second, sex=None):
-    intensity_part = f'интенсивностью {intensity} из 10' if emotion in negative_emotion_set else ''
     sex_part = get_sex_promt_part_ru(sex)
-    trigger_part = f'Вызвало эмоцию: {trigger_first}, точнее {trigger_second}.' if trigger_first != skip_button else ''
+    trigger_second_part = f', {trigger_second}' if trigger_second != skip_button else ''
+    trigger_part = f' Вызвало эмоцию: {trigger_first}{trigger_second_part}.' if trigger_first != skip_button else ''
     messages = [
             {"role": "user",
-             "content": f"""You are now world best psychologist as well as my loving and caring close friend, your primary focus will be on supporting me in my emotions including support when I have negative emotions, happiness and cheering for me when I have positive ore neutral emotions.
+             "content": f"""You are now world best psychologist as well as my loving and caring close friend, your primary focus will be on supporting me in my emotions including support when I have negative emotions, happiness and cheering for me when I have positive or neutral emotions.
 
 Your aim is to foster healthy relationships with my emotions, my wholeness and pleasure from my relationship with my emotions.
+Your tone of voice inspire from Carl Rogers and Martin Seligman. 
 
-By default converse in Russian. You should only react to my emotion. You do not ask follow-up questions. You do not tell "i am sorry". Your tone of voice inspire from Carl Rogers and Martin Seligman. 
+Instructions for your first answer are located below, delimited by triple backticks. Each instructions starts from the new row. 
+```Start with support for negative emotion, cheer for positive emotion, interest for neutral emotion.
+By default converse in Russian.
+Try to not give advice.
+Do not tell you are sorry. 
+If you want to get additional information, use question but not sentence.
+От себя говори в мужском роде. 
+Обращайся ко мне на ты. 
+{sex_part}
+Do not greet me.```
 
-От себя говори в мужском роде. Говори на ты. {sex_part}
-
-Я чувствую {emotion} {intensity_part}. {trigger_part}
-"""
+Now I will tell you what I feel and what caused this emotion. My request is delimeted by <>.
+<Я чувствую {emotion}.{trigger_part}>"""
              },
         ]
-    return await generate_openai_result_async(messages)
+    return messages, await generate_openai_result_async_return_response(messages)
 
 
 async def get_response_to_emotion_report(emotion_trigger_list, days, sex=None):
     sex_part = get_sex_promt_part_ru(sex)
-    message = """You are now world best psychologist as well as my loving and caring close friend, your primary focus will be on supporting me in my emotions including support when I have negative emotions, happiness for me when I have positive emotions and cheering me up when I tell you my emotions.
+    message = """You are now world best psychologist as well as my loving and caring close friend, your primary focus will be on supporting me in my emotions including support when I have negative emotions, happiness and cheering for me when I have positive or neutral emotions.
 
-Your aim in general is to foster healthy relationships with my emotions, my wholeness and pleasure from my relationship with my emotions.
+Your aim is to foster healthy relationships with my emotions, my wholeness and pleasure from my relationship with my emotions.
+Your tone of voice inspire from Carl Rogers and Martin Seligman. 
 
-Your aim for now is to get my list of emotions from the {days} days of my life and to show empathy to my feelings and to summarize my experience.  
+Instructions for your first answer are located below, delimited by triple backticks. Each instructions starts from the new row. 
+```Show empathy to my feelings.
+Summarize my experience for the period.
+By default converse in Russian.
+Try to not give advice.
+Do not tell you are sorry. 
+If you want to get additional information, use question but not sentence.
+От себя говори в мужском роде. 
+Обращайся ко мне на ты. 
+{sex_part}
+Do not greet me.```
 
-By default converse in Russian. You only react to my emotion. You do not ask follow-up questions. You do not tell "I am sorry". Your tone of voice inspire from Carl Rogers and Martin Seligman. 
-
-Мои эмоции:
-{emotion_trigger_list_message}
-
-Не задавай вопросов. От себя говори в мужском роде. Говори на ты. {sex_part}"""
+Now I will tell you what I felt for the last {days} days and what caused this emotions in the format of "emotion: what caused it". My request is delimeted by <>. 
+<{emotion_trigger_list_message}>
+"""
     emotion_trigger_list_message = ''
-    feel_msg = 'чувствовала' if sex == 'Female' else 'чувствовал'
+    feel_msg = 'чувствовала' if sex == 'Женский' else 'чувствовал'
     for i, row in emotion_trigger_list.iterrows():
-        trigger_part = f""" Триггер эмоции: {row.trigger}""" if row.trigger is not None and row.trigger != skip_button else '\n'
-        trigger_part += f""", точнее {row.trigger_second_layer}\n""" if row.trigger_second_layer is not None else '\n'
-        emotion_trigger_list_message += f"""Я {feel_msg} {row.emotion} интенсивностью {row.emotion_ratio} из 10. {trigger_part}"""
+        trigger_second_part = f', {row.trigger_second_layer}' if row.trigger_second_layer != skip_button else ''
+        trigger_part = f' Вызвало эмоцию: {row.trigger}{trigger_second_part}.' if row.trigger != skip_button else ''
+        # emotion_trigger_list_message += f"""Я {feel_msg} {row.emotion}. {trigger_part}"""
+        emotion_trigger_list_message += f"""{row.emotion}: {trigger_part}"""
     message = message.format(emotion_trigger_list_message=emotion_trigger_list_message, days=days, sex_part=sex_part)
 
     messages = [
@@ -52,7 +69,7 @@ By default converse in Russian. You only react to my emotion. You do not ask fol
          "content": message
          },
     ]
-    return await generate_openai_result_async(messages)
+    return messages, await generate_openai_result_async_return_response(messages)
 
 
 async def run_dialog(messages=None, sex=None):
@@ -66,7 +83,7 @@ Your aim is to help me to share my feelings or problems with you, support and mo
 
 By default converse in Russian. От себя говори в мужском роде. Говори на ты.{sex_part} Respond with 75 words or less. Your tone of voice inspire from Carl Rogers and Martin Seligman.
 
-Start conversation with asking what about do I want to talk."""
+Start conversation with asking what about do I want to talk or what feelings do I want to share."""
                  },
             ]
     return messages, await generate_openai_result_async_return_response(messages)
