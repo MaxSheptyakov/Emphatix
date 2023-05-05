@@ -87,7 +87,7 @@ async def trigger_gather_start(message: Message, state: FSMContext, db: DB):
         return
     triggers_list = await db.get_triggers_sorted_list(message)
     keyboard = create_keyboard(triggers_list, row_width=2, with_add_variant=True, with_skip=True,
-                               with_dont_know=True, one_time=True)
+                               with_dont_know=True if dont_know_button not in triggers_list else False, one_time=True)
     await message.reply(triggers_start_gather_message, reply_markup=keyboard, reply=False)
 
 
