@@ -6,7 +6,7 @@ async def main():
     try:
         await asyncio.gather(
             client_cli(),
-            # push_cli(),
+            push_cli(),
         )
     except (KeyboardInterrupt, SystemExit):
         print('Bot stopped')
