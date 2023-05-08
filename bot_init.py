@@ -28,7 +28,7 @@ bot.send_message = types.MethodType(new_send_message, bot)
 
 
 if config.tg_bot.use_redis:
-    storage = RedisStorage2(pool_size=5)
+    storage = RedisStorage2(host="redis_bot",pool_size=5)
 else:
     storage = MemoryStorage()
 dp = Dispatcher(bot, storage=storage)

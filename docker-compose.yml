@@ -1,7 +1,17 @@
 version: '3.8'
 
 services:
-  bot:
+  redis:
+      image: redis
+      container_name: redis_bot
+      ports:
+        - "6379:6379"
+      volumes:
+        - redis-data:/data
+  bot_test:
     build: .
-    container_name: bot
+    container_name: bot_test
     command: bash -c "python app.py"
+
+volumes:
+    redis-data:
