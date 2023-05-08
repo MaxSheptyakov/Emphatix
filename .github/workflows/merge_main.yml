@@ -6,7 +6,6 @@ on:
       - test
 
 env:
-  SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
   GIT_TOKEN: ${{ secrets.ACCESS_TOKEN }}
 
 jobs:
@@ -19,19 +18,18 @@ jobs:
         with:
           ref: test
 
-      - name: Deploy Docker Image to Server
+      - name: Deploy to remote server
         uses: appleboy/ssh-action@master
         with:
-          host: 52.208.43.242
-          username: ubuntu
-          password: 123456
-          key: ${{ env.SSH_PRIVATE_KEY }}
+          host: ${{ secrets.REMOTE_SERVER_HOST }}
+          username: ${{ secrets.REMOTE_SERVER_USERNAME }}
+          password: ${{ secrets.REMOTE_SERVER_PASSWORD }}
           script: |
             cd test_bot
-            sudo rm -r Emphatix
+            rm -rf Emphatix
             git clone https://${{ env.GIT_TOKEN }}@github.com/MaxSheptyakov/Emphatix.git --branch test
             cp ~/test_bot/bot.ini ~/test_bot/Emphatix
-            sudo docker ps -aq | xargs sudo docker stop | xargs sudo docker rm &&
-            sudo docker image rm emphatix-bot
-            cd Emphatix && sudo docker compose up --build -d
+            # docker stop bot 
+            # docker container prune -f && docker image prune -f && docker volume prune -f && docker network prune -f
+            cd Emphatix && docker compose up --build -d
             

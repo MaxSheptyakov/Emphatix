@@ -5,8 +5,8 @@ from request_handler import cli as client_cli
 async def main():
     try:
         await asyncio.gather(
-            push_cli(),
             client_cli(),
+            push_cli(),
         )
     except (KeyboardInterrupt, SystemExit):
         print('Bot stopped')
