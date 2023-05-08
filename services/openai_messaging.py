@@ -27,7 +27,7 @@ If you want to get additional information, use question but not sentence.
 Do not greet me.```
 
 Now I will tell you what I feel and what caused this emotion. My request is delimeted by <>.
-<Я чувствую {emotion}.{trigger_part}>"""
+<Я чувствую эмоцию {emotion}.{trigger_part}>"""
              },
         ]
     return messages, await generate_openai_result_async_return_response(messages)
