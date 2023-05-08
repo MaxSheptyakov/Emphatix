@@ -8,9 +8,9 @@ services:
         - "6379:6379"
       volumes:
         - redis-data:/data
-  bot_test:
+  bot:
     build: .
-    container_name: bot_test
+    container_name: bot
     command: bash -c "python app.py"
 
 volumes:
