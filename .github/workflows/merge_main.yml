@@ -23,8 +23,13 @@ jobs:
           password: ${{ secrets.REMOTE_SERVER_PASSWORD }}
           script: |
             cd test_bot
+<<<<<<< HEAD
             rm -rf Emphatix
             git clone https://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@github.com/MaxSheptyakov/Emphatix.git --branch test
+=======
+            #rm -rf Emphatix
+            git clone https://${{ env.GIT_TOKEN }}@github.com/MaxSheptyakov/Emphatix.git --branch test
+>>>>>>> 9642368e20acb47c06eadca8d6d5f894e7bda114
             cp ~/test_bot/bot.ini ~/test_bot/Emphatix
             # docker stop bot 
             # docker container prune -f && docker image prune -f && docker volume prune -f && docker network prune -f
