@@ -1,3 +1,5 @@
+import json
+
 from aiogram import Dispatcher, types
 from aiogram.types import Message, ReplyKeyboardRemove
 from aiogram.dispatcher import FSMContext
@@ -6,6 +8,7 @@ from aiogram.dispatcher.filters import Text
 from messages.common import bot_thinking_message, evaluate_bot_answer_message
 from messages.user_start import main_page_message
 from services.db_interaction import DB
+from services.openai_api import get_ans_from_response, get_msg_from_response
 
 from states.emotion_gather import EmotionGatherStates
 
@@ -75,28 +78,6 @@ async def intensity_gather_finish(message: Message, state: FSMContext, db: DB):
     await trigger_gather_start(message, state, db)
 
 
-async def emotion_gather_finish(message: Message, state: FSMContext, db: DB):
-    await db.log_message(message)
-    user = await db.return_user_if_exist(message)
-    data = await state.get_data()
-    emotion = data.get('user_emotion')
-    intensity = data.get('emotion_intensity')
-    trigger_first = data.get('trigger')
-    trigger_second = data.get('trigger_second_layer')
-    if emotion is not None and intensity is not None and True:# message.from_id in config.tg_bot.beta_users:
-        m = await message.reply(bot_thinking_message, reply=False)
-        reply_text = await get_response_to_emotion(emotion=emotion, intensity=intensity, trigger_first=trigger_first,
-                                                   trigger_second=trigger_second, sex=user.sex)
-        await m.delete()
-        await message.reply(reply_text, reply_markup=reaction_keyboard, reply=False)
-        # await m1.edit_reply_markup(reaction_keyboard)
-        await message.reply(evaluate_bot_answer_message, reply_markup=home_keyboard, reply=False, parse_mode='MarkdownV2')
-    else:
-        reply_text = finish_positive_med_high_intensity_message
-        await message.reply(reply_text, reply_markup=home_keyboard, reply=False)
-    await state.finish()
-    # await message.reply(reply_text, reply_markup=home_keyboard, reply=False)
-
 
 async def trigger_gather_start(message: Message, state: FSMContext, db: DB):
     await db.log_message(message)
@@ -106,7 +87,7 @@ async def trigger_gather_start(message: Message, state: FSMContext, db: DB):
         return
     triggers_list = await db.get_triggers_sorted_list(message)
     keyboard = create_keyboard(triggers_list, row_width=2, with_add_variant=True, with_skip=True,
-                               with_dont_know=True, one_time=True)
+                               with_dont_know=True if dont_know_button not in triggers_list else False, one_time=True)
     await message.reply(triggers_start_gather_message, reply_markup=keyboard, reply=False)
 
 
@@ -136,6 +117,31 @@ async def trigger_gather_finish(message: Message, state: FSMContext, db: DB, is_
     await emotion_gather_finish(message, state, db)
 
 
+async def emotion_gather_finish(message: Message, state: FSMContext, db: DB):
+    await db.log_message(message)
+    user = await db.return_user_if_exist(message)
+    await state.set_state(EmotionGatherStates.gather_finish)
+    data = await state.get_data()
+    emotion = data.get('user_emotion')
+    intensity = data.get('emotion_intensity')
+    trigger_first = data.get('trigger')
+    trigger_second = data.get('trigger_second_layer')
+    if emotion is not None and intensity is not None:# message.from_id in config.tg_bot.beta_users:
+        m = await message.reply(bot_thinking_message, reply=False)
+        messages, response = await get_response_to_emotion(emotion=emotion, intensity=intensity, trigger_first=trigger_first,
+                                                   trigger_second=trigger_second, sex=user.sex)
+        reply_text = get_ans_from_response(response)
+        dialog_messages = messages + [get_msg_from_response(response)]
+        await m.delete()
+        await message.reply(reply_text, reply_markup=reaction_keyboard, reply=False)
+        await state.update_data(dialog_messages=json.dumps(dialog_messages))
+        print(dialog_messages)
+        await message.reply(evaluate_bot_answer_message, reply_markup=home_keyboard, reply=False, parse_mode='MarkdownV2')
+    else:
+        reply_text = finish_positive_med_high_intensity_message
+        await message.reply(reply_text, reply_markup=home_keyboard, reply=False)
+    # await message.reply(reply_text, reply_markup=home_keyboard, reply=False)
+
 
 
 
@@ -155,7 +161,7 @@ def emotions_gather(dp: Dispatcher):
     dp.register_message_handler(intensity_gather_start,
                                 state=EmotionGatherStates.write_own_emotion_state)
 
-    dp.register_message_handler(intensity_gather_finish, Text(equals=intensity_buttons),
+    dp.register_message_handler(intensity_gather_finish, Text(equals=intensity_buttons + dont_know_intensity_buttons),
                                 state=EmotionGatherStates.waiting_for_intensity)
 
 

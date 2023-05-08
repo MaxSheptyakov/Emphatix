@@ -67,7 +67,7 @@ custom_frequency_keyboard.row(all_variants_chosen_button)
 
 
 """Additional Questions"""
-skip_button = _('Пропустить')
+from keyboards.common import skip_button
 reply_to_additional_questions_button = _('Хорошо')
 additional_questions_buttons = [skip_button, reply_to_additional_questions_button]
 additional_questions_keyboard = ReplyKeyboardMarkup(resize_keyboard=True)

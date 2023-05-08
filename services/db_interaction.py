@@ -455,9 +455,11 @@ class DB:
     async def get_pushes_to_send(self):
         statement = text(f"""select distinct s.send_schedule_id, s.user_id, s.send_type, s.custom_text
         from send_schedule s
+            left join users u on u.user_id = s.user_id
             left join sent_pushes p on s.send_schedule_id = p.send_schedule_id
                 and p.created_at_date = current_date
         where s.active 
+            and u.is_active
             and (s.created_at::time < send_time_server or s.created_at < current_date)
             and s.send_time_server <= current_time
             and (s.days_of_week is null or s.days_of_week ~ extract(isodow from current_date)::text

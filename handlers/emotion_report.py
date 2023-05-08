@@ -1,3 +1,5 @@
+import json
+
 from aiogram import Dispatcher
 from aiogram.dispatcher import FSMContext
 from aiogram.types import Message, ReplyKeyboardRemove
@@ -7,6 +9,7 @@ from config import config
 from messages.common import bot_thinking_message, evaluate_bot_answer_message
 from messages.user_start import main_page_message
 from services.db_interaction import DB
+from services.openai_api import get_ans_from_response, get_msg_from_response
 from services.openai_messaging import get_response_to_emotion_report
 from states.emotion_report import EmotionReport
 from keyboards.emotion_report import *
@@ -87,17 +90,19 @@ async def send_flower(message: Message, state: FSMContext, db: DB, days: int = N
         user = await db.return_user_if_exist(message)
         sex = user.sex
         msg = await message.reply(bot_thinking_message, reply=False)
-        ai_reply_text = await get_response_to_emotion_report(emotion_trigger_list, days, sex)
+        messages, response = await get_response_to_emotion_report(emotion_trigger_list, days, sex)
+        reply_text = get_ans_from_response(response)
+        dialog_messages = messages + [get_msg_from_response(response)]
         await msg.delete()
-        await message.reply(ai_reply_text, reply_markup=reaction_keyboard, reply=False)
+        await message.reply(reply_text, reply_markup=reaction_keyboard, reply=False)
         await message.reply(evaluate_bot_answer_message, reply_markup=home_keyboard, reply=False, parse_mode='MarkdownV2')
+        await state.update_data(dialog_messages=json.dumps(dialog_messages))
     else:
         await message.reply_photo(open(flower, 'rb'), reply_markup=home_keyboard, reply=False)
     try:
         os.remove(flower)
     except:
         pass
-    await state.finish()
 
 
 def weekly_report_dp(dp: Dispatcher):
