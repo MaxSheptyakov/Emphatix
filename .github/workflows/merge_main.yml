@@ -26,7 +26,7 @@ jobs:
             rm -rf Emphatix
             git clone https://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@github.com/MaxSheptyakov/Emphatix.git 
             cp ~/test_bot/bot.ini ~/test_bot/Emphatix
-            docker stop bot 
+            docker stop bot redis_bot
             docker container prune -f && docker image prune -f && docker volume prune -f && docker network prune -f
             cd Emphatix && docker compose up --build -d
           

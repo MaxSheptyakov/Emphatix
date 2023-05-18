@@ -2,6 +2,7 @@ version: '3.8'
 
 services:
   redis:
+      restart: always
       image: redis
       container_name: redis_bot
       ports:
@@ -9,6 +10,7 @@ services:
       volumes:
         - redis-data:/data
   bot:
+    restart: always
     build: .
     container_name: bot
     command: bash -c "python app.py"
